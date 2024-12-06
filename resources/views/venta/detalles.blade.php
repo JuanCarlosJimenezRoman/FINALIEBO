@@ -28,54 +28,8 @@
     </div>
 </div>
 
-<div class="card mb-4">
-    <div class="card-header">
-        <h3>Productos</h3>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Imagen</th>
-                        <th>Producto</th>
-                        <th>Cantidad</th>
-                        <th>Precio Unitario</th>
-                        <th>Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($venta->detalleventa as $detalle)
-                        <tr>
-                            <td>
-                                @if ($detalle->producto && $detalle->producto->foto)
-                                    <img src="{{ asset('storage/' . $detalle->producto->foto) }}" alt="{{ $detalle->producto->producto }}" width="50">
-                                @else
-                                    <span>Sin imagen</span>
-                                @endif
-                            </td>
-                            <td>{{ $detalle->producto->producto ?? 'Producto eliminado' }}</td>
-                            <td>{{ $detalle->cantidad }}</td>
-                            <td>${{ number_format($detalle->precio, 2) }}</td>
-                            <td>${{ number_format($detalle->cantidad * $detalle->precio, 2) }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="4" class="text-end"><strong>Total General:</strong></td>
-                        <td>
-                            <strong>
-                                ${{ number_format($venta->detalleventa->sum(fn($d) => $d->cantidad * $d->precio), 2) }}
-                            </strong>
-                        </td>
-                    </tr>
-                </tfoot>
 
-            </table>
-        </div>
-    </div>
-</div>
+
 
 @if($venta->estados ?? false)
 <div class="card mb-4">
@@ -105,8 +59,9 @@
 </div>
 @endif
 
+
 <div class="d-flex justify-content-end">
-    <a href="{{ route('ventas.editar', $venta->id) }}" class="btn btn-warning me-2">Editar</a>
+    {{-- <a href="{{ route('ventas.editar', $venta->id) }}" class="btn btn-warning me-2">Editar</a> --}}
     <a href="{{ route('ventas.ticket', $venta->id) }}" target="_blank" class="btn btn-primary me-2">Imprimir Recibo</a>
     <form action="{{ route('ventas.eliminar', $venta->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar esta venta?')">
         @csrf

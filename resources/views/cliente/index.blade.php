@@ -65,38 +65,28 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="DataTables/datatables.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Inicializa la tabla de clientes con DataTables
-            new DataTable('#tblClients', {
-                responsive: true,
-                fixedHeader: true,
-                ajax: {
-                    url: '{{ route('clients.list') }}',  // Ruta que proporciona los datos para la tabla
-                    dataSrc: 'data'
-                },
-                columns: [
-                    { data: 'id' },  // Columna que muestra el ID del cliente
-                    { data: 'nombre' },  // Columna que muestra el nombre del cliente
-                    { data: 'telefono' },  // Columna que muestra el teléfono del cliente
-                    { data: 'direccion' },  // Columna que muestra la dirección del cliente
-                    {
-                        // Columna para los botones de acciones (editar y eliminar)
-                        data: null,
-                        render: function(data, type, row) {
-                            // Botones para editar y eliminar el cliente
-                            return '<a class="btn btn-sm btn-primary" href="/clientes/' +
-                                row.id + '/edit">Editar</a>' +
-                                '<button class="btn btn-sm btn-danger" onclick="deleteClient(' +
-                                row.id + ')">Eliminar</button>';
-                        }
-                    }
-                ],
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json',  // Traducción de DataTables al español
-                },
-                order: [ [0, 'desc'] ]  // Ordena la tabla de clientes por ID en orden descendente
-            });
-        });
+       document.addEventListener("DOMContentLoaded", function() {
+    new DataTable('#tblClients', {
+        responsive: true,
+        fixedHeader: true,
+        ajax: '{{ route('clients.list') }}', // Ruta para obtener los datos del JSON
+        columns: [
+            { data: 'id' }, // ID del cliente
+            { data: 'nombre' }, // Nombre del cliente
+            {
+                data: 'user.email', // Correo del usuario relacionado
+                defaultContent: 'Sin correo' // Muestra "Sin correo" si no hay datos en `user.email`
+            },
+            { data: 'telefono' }, // Teléfono del cliente
+            { data: 'direccion' }, // Dirección del cliente
+
+        ],
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json', // Traducción al español
+        },
+        order: [[0, 'desc']] // Ordena por ID descendente
+    });
+});
 
         // Función para eliminar un cliente
         function deleteClient(clientId) {

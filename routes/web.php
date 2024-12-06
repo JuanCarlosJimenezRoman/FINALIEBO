@@ -57,11 +57,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/venta', [VentaController::class, 'store'])->name('venta.store');
     Route::get('/venta/{id}/ticket', [VentaController::class, 'ticket'])->name('venta.ticket');
 
-    Route::get('/admin/ventas', [AdminVentaController::class, 'index'])->name('ventas.index');
-    Route::get('/ventas', [AdminVentaController::class, 'index'])->name('ventas.index'); // Vista principal
+    Route::get('/admin/ventas', [AdminVentaController::class, 'index'])->name('venta.index');
+    //Route::get('/ventas', [AdminVentaController::class, 'index'])->name('ventas.index'); // Vista principal
     Route::get('/ventas/list', [AdminVentaController::class, 'listarVentas'])->name('ventas.list'); // Endpoint para DataTables
     Route::post('/ventas/{id}/estado', [AdminVentaController::class, 'cambiarEstado'])->name('ventas.cambiarEstado'); // Cambiar estado
-    Route::get('/ventas/{id}/detalles', [AdminVentaController::class, 'detalles'])->name('ventas.detalles');
+    Route::get('/ventas/{id}/detalles', [AdminVentaController::class, 'detalles'])->name('venta.detalles');
+    Route::get('/listarClientes', [DatatableController::class, 'clients'])->name('clients.list');
+
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -75,17 +77,16 @@ Route::get('/venta', [CarritoController::class, 'index'])->name('productosVenta.
 Route::get('/productosVenta', [CarritoController::class, 'index'])->name('productosVenta');
 Route::get('/sales/list', [AdminVentaController::class, 'index'])->name('sales.list');
 Route::post('/ventas/{id}/estado', [AdminVentaController::class, 'cambiarEstado'])->name('ventas.estado');
+Route::get('/ventas', [AdminVentaController::class, 'index'])->name('venta.index');
 
 // Ruta para editar la venta
 Route::get('/ventas/{id}/editar', [VentaController::class, 'edit'])->name('ventas.editar');
-
+Route::post('/ventas/{id}', [AdminVentaController::class, 'update'])->name('ventas.update');
 // Ruta para imprimir recibo
 Route::get('/ventas/{id}/ticket', [VentaController::class, 'ticket'])->name('ventas.ticket');
 
 // Ruta para eliminar la venta
 Route::delete('/ventas/{id}', [VentaController::class, 'destroy'])->name('ventas.eliminar');
-
-
 
 });
 

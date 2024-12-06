@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
+use App\Models\Detalleventa;
 
 use App\Models\Venta;
 
@@ -37,10 +38,7 @@ public function cambiarEstado(Request $request, $id)
 
 public function detalles($id)
 {
-    // Obtén la venta con cliente y productos relacionados
-
-    $venta = Venta::with('detalleventa.producto')->findOrFail($id);
-
+    $venta = Venta::with('detalleventa.producto', 'cliente')->findOrFail($id);
 
     if (!$venta) {
         return redirect()->route('sales.list')->with('error', 'Venta no encontrada.');
@@ -48,11 +46,33 @@ public function detalles($id)
 
     return view('venta.detalles', compact('venta'));
 }
+
+
 public function edit($id)
 {
     $venta = Venta::with('detalleventa.producto', 'cliente')->findOrFail($id);
     return view('ventas.edit', compact('venta'));
 }
+
+public function update(Request $request, $id)
+{
+    $venta = Venta::findOrFail($id);
+
+    // Actualizar datos generales de la venta
+    $venta->estado = $request->input('estado', $venta->estado);
+    $venta->save();
+
+    // Actualizar detalles (productos)
+    foreach ($request->input('productos', []) as $detalleId => $detalleData) {
+        $detalle = Detalleventa::findOrFail($detalleId);
+        $detalle->cantidad = $detalleData['cantidad'];
+        $detalle->precio = $detalleData['precio'];
+        $detalle->save();
+    }
+
+    return redirect()->route('ventas.detalles', $venta->id)->with('success', 'Venta actualizada correctamente.');
+}
+
 
 public function ticket($id)
 {
@@ -70,7 +90,7 @@ public function destroy($id)
     // Luego eliminar la venta
     $venta->delete();
 
-    return redirect()->route('sales.list')->with('success', 'Venta eliminada correctamente.');
+    return redirect()->route('ventas.show')->with('success', 'Venta eliminada correctamente.');
 }
 
 

@@ -67,7 +67,7 @@ class VentaController extends Controller
         }
     }
 
-    public function ticket($id)
+    public function tickekt($id)
     {
         $data['company'] = Compania::first();
 
@@ -109,4 +109,85 @@ class VentaController extends Controller
             ->get();
         return response()->json($clients);
     }
+
+
+public function edit($id)
+{
+    $venta = Venta::with('detalleventa.producto', 'cliente')->findOrFail($id);
+    return view('ventas.edit', compact('venta'));
+}
+
+public function update(Request $request, $id)
+{
+    $venta = Venta::findOrFail($id);
+
+    // Actualizar datos generales de la venta
+    $venta->estado = $request->input('estado', $venta->estado);
+    $venta->save();
+
+    // Actualizar detalles (productos)
+    foreach ($request->input('productos', []) as $detalleId => $detalleData) {
+        $detalle = Detalleventa::findOrFail($detalleId);
+        $detalle->cantidad = $detalleData['cantidad'];
+        $detalle->precio = $detalleData['precio'];
+        $detalle->save();
+    }
+
+    return redirect()->route('ventas.detalles', $venta->id)->with('success', 'Venta actualizada correctamente.');
+}
+
+public function ticket($id)
+{
+    // Obtén los datos de la compañía
+    $data['company'] = Compania::first();
+
+    // Obtén la venta con el cliente
+    $data['venta'] = Venta::with('cliente')->find($id);
+
+    // Si no se encuentra la venta, lanza un error
+    if (!$data['venta']) {
+        return redirect()->route('venta.index')->with('error', 'Venta no encontrada.');
+    }
+
+    // Obtén los productos asociados a la venta
+    $data['productos'] = Detalleventa::with('producto')
+        ->where('id_venta', $id)
+        ->get();
+
+    if ($data['productos']->isEmpty()) {
+        return redirect()->route('venta.index')->with('error', 'No hay productos asociados a esta venta.');
+    }
+
+    // Formatea la fecha y la hora
+    $fecha_venta = $data['venta']->created_at ?? now();
+    $data['fecha'] = $fecha_venta->format('d/m/Y');
+    $data['hora'] = $fecha_venta->format('h:i A');
+
+    // Genera el contenido del ticket en HTML
+    $html = View::make('ventas.ticket', $data)->render();
+
+    // Genera el PDF utilizando laravel-dompdf
+    Pdf::setOption(['dpi' => 150, 'defaultFont' => 'sans-serif']);
+    $pdf = Pdf::loadHTML($html)->setPaper([0, 0, 140, 500], 'portrait')->setWarnings(false);
+
+    // Devuelve el PDF como respuesta
+    //return $pdf->stream('ticket.pdf');
+    return view('venta.show');
+}
+
+
+
+public function destroy($id)
+{
+    $venta = Venta::findOrFail($id);
+
+    // Eliminar los detalles asociados primero
+    $venta->detalleventa()->delete();
+
+    // Luego eliminar la venta
+    $venta->delete();
+
+    return redirect()->route('sales.list')->with('success', 'Venta eliminada correctamente.');
+}
+
 }

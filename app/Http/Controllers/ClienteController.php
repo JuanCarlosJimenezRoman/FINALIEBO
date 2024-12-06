@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cliente;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 /**
  * Class ClienteController
@@ -39,18 +40,35 @@ class ClienteController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        request()->validate(Cliente::$rules);
+{
+    $request->validate([
+        'nombre' => 'required|string|max:255',
+        'telefono' => 'required|string|max:15',
+        'direccion' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|min:8',
+    ]);
 
-        $cliente = Cliente::create([
-            'nombre' => $request->nombre,
-            'telefono' => $request->telefono,
-            'direccion' => $request->direccion,
-        ]);
+    // Crear el usuario
+    $user = User::create([
+        'name' => $request->nombre,
+        'email' => $request->email,
+        'password' => bcrypt($request->password),
+        'role' => 'cliente', // Asignar rol de cliente
+    ]);
 
-        return redirect()->route('clientes.index')
-            ->with('success', 'Cliente creado.');
-    }
+    // Crear el cliente y asociarlo con el usuario
+    $cliente = Cliente::create([
+        'nombre' => $request->nombre,
+        'telefono' => $request->telefono,
+        'direccion' => $request->direccion,
+        'user_id' => $user->id, // Relacionar con el usuario recién creado
+    ]);
+
+    return redirect()->route('clientes.index')->with('success', 'Cliente creado correctamente.');
+}
+
+
 
     /**
      * Display the specified resource.
@@ -111,4 +129,9 @@ class ClienteController extends Controller
         $cliente = Cliente::find($id)->delete();
         return ($cliente) ? 'Cliente eliminado' : 'Error al eliminar';
     }
+    public function user()
+{
+    return $this->belongsTo(User::class);
+}
+
 }

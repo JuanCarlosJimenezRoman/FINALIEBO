@@ -19,11 +19,14 @@ class DatatableController extends Controller
     }
 
     public function clients()
-    {
-        $clients = Cliente::select('id', 'nombre', 'telefono', 'direccion')
-            ->orderBy('id', 'desc')->get();
-        return DataTables::of($clients)->toJson();
-    }
+{
+    $clientes = Cliente::with('user')->get();
+
+    return response()->json([
+        'data' => $clientes,
+    ]);
+}
+
 
     public function users()
     {
@@ -46,4 +49,10 @@ class DatatableController extends Controller
             ->orderBy('ventas.id', 'desc')->get();
         return DataTables::of($sales)->toJson();
     }
+    public function list()
+{
+    $clientes = Cliente::with('user')->get(); // Carga la relación `user`
+    return response()->json(['data' => $clientes]);
+}
+
 }
