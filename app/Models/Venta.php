@@ -8,8 +8,15 @@ class Venta extends Model
 {
   protected $fillable = ['total', 'id_cliente', 'id_usuario'];
 
-  public function detalleventa()
-  {
-    return $this->hasMany(Detalleventa::class);
-  }
+    public function detalleventa()
+    {
+        return $this->hasMany(Detalleventa::class);
+    }
+    // En el modelo Venta
+    public function cliente()
+    {
+        return $this->belongsTo(User::class, 'id_cliente');
+    }
 }
+
+

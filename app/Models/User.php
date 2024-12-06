@@ -15,7 +15,8 @@ class User extends Authenticatable
     static $rules = [
         'name' => 'required',
         'email' => 'required',
-        'password' => 'required'
+        'password' => 'required',
+        'role' => 'required'
       ];
     /**
      * The attributes that are mass assignable.
@@ -26,6 +27,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role'
     ];
 
     /**
@@ -62,4 +64,15 @@ class User extends Authenticatable
     {
         return 'profile';
     }
+
+    public function isAdmin()
+    {
+        return $this->role === config('roles.admin');
+    }
+
+    public function isCliente()
+    {
+        return $this->role === config('roles.cliente');
+    }
+
 }

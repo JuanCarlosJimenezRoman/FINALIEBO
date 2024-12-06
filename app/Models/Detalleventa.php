@@ -9,8 +9,14 @@ class Detalleventa extends Model
   protected $table = 'detalleventa';
   protected $fillable = ['precio', 'cantidad', 'id_producto', 'id_venta'];
 
-  public function venta()
-  {
-    return $this->belongsTo(Venta::class);
-  }
+    public function venta()
+    {
+        return $this->belongsTo(Venta::class);
+    }
+    public function producto()
+    {
+        return $this->belongsTo(Producto::class, 'id_producto');
+    }
 }
+
+
