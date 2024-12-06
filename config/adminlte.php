@@ -290,74 +290,86 @@ return [
     */
 
     'menu' => [
-        [
-            'type'         => 'fullscreen-widget',
-            'topnav_right' => true,
-        ],
-
-        // Sidebar items:
-
-        [
-            'text' => 'blog',
-            'url'  => 'admin/blog',
-            'can'  => 'manage-blog',
-        ],
-        [
-            'text' => 'Tablero',
-            'url'  => 'dashboard',
-            'icon'        => 'fas fa-fw fa-chart-pie'
-        ],
-        [
-            'text'        => 'Administración',
-            'url'         => '#',
-            'icon'        => 'fas fa-fw fa-list',
-            'submenu' => [
-                [
-                    'text' => 'Usuarios',
-                    'url'  => '/usuarios',
-                ],
-                [
-                    'text' => 'Plantel',
-                    'url'  => '/compania',
-                ],
-            ],
-        ],
-        [
-            'text' => 'Clientes',
-            'url'  => 'clientes',
-            'icon'        => 'fas fa-fw fa-users'
-        ],
-        [
-            'text'        => 'Artículos',
-            'url'         => '#',
-            'icon'        => 'fas fa-fw fa-list',
-            'submenu' => [
-                [
-                    'text' => 'Categorias',
-                    'url'  => 'categorias',
-                ],
-                [
-                    'text' => 'Libros',
-                    'url'  => 'productos',
-                ],
-            ],
-        ],
-        [
-            'text'        => 'Ventas',
-            'url'         => 'admin/pages',
-            'icon'        => 'fas fa-fw fa-shopping-cart',
-            'submenu' => [
-                [
-                    'text' => 'Nueva venta',
-                    'url'  => '/venta',
-                ],
-                [
-                    'text' => 'Listar ventas',
-                    'url'  => '/venta/show',
-                ],
-            ],
-        ]
+    // Widgets en la barra superior
+    [
+        'type'         => 'fullscreen-widget',
+        'topnav_right' => true,
     ],
+
+    /// Opciones exclusivas para clientes
+    [
+        'text' => 'Mis Pedidos',
+        'url'  => '/pedidos',
+        'icon' => 'fas fa-fw fa-box',
+        'can'  => 'is-client', // Restricción para clientes
+    ],
+    [
+        'text' => 'Productos Disponibles',
+        'url'  => '/productosVenta',
+        'icon' => 'fas fa-fw fa-store',
+        'can'  => 'is-client', // Restricción para clientes
+    ],
+
+    // Opciones exclusivas para administradores
+    [
+        'text' => 'Tablero',
+        'url'  => 'dashboard',
+        'icon' => 'fas fa-fw fa-chart-pie',
+        'can'  => 'is-admin', // Solo administradores
+    ],
+    [
+        'text'        => 'Administración',
+        'icon'        => 'fas fa-fw fa-list',
+        'can'         => 'is-admin',
+        'submenu' => [
+            [
+                'text' => 'Usuarios',
+                'url'  => '/usuarios',
+            ],
+            [
+                'text' => 'Plantel',
+                'url'  => '/compania',
+            ],
+        ],
+    ],
+    [
+        'text' => 'Clientes',
+        'url'  => 'clientes',
+        'icon' => 'fas fa-fw fa-users',
+        'can'  => 'is-admin', // Solo administradores
+    ],
+    [
+        'text'        => 'Artículos',
+        'icon'        => 'fas fa-fw fa-list',
+        'can'         => 'is-admin',
+        'submenu' => [
+            [
+                'text' => 'Categorias',
+                'url'  => '/categorias',
+            ],
+            [
+                'text' => 'Libros',
+                'url'  => '/productos',
+            ],
+        ],
+    ],
+    [
+        'text'        => 'Ventas',
+        'icon'        => 'fas fa-fw fa-shopping-cart',
+        'can'         => 'is-admin',
+        'submenu' => [
+            [
+                'text' => 'Nueva venta',
+                'url'  => '/venta',
+            ],
+            [
+                'text' => 'Listar ventas',
+                'url'  => '/venta/show',
+            ],
+        ],
+    ],
+],
+
 
     /*
     |--------------------------------------------------------------------------

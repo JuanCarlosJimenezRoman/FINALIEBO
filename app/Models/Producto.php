@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property $precio_compra
  * @property $precio_venta
  * @property $foto
+ * @property $stock
+ * @property $id_categoria
  * @property $created_at
  * @property $updated_at
  *
@@ -21,26 +23,51 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Producto extends Model
 {
+    /**
+     * Reglas de validación.
+     *
+     * @var array
+     */
+    static $rules = [
+        'codigo' => 'required',
+        'producto' => 'required',
+        'precio_compra' => 'required|numeric',
+        'precio_venta' => 'required|numeric',
+        'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'stock' => 'required|integer|min:0',
+    ];
 
-  static $rules = [
-    'codigo' => 'required',
-    'producto' => 'required',
-    'precio_compra' => 'required',
-    'precio_venta' => 'required',
-    'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-  ];
+    /**
+     * Configuración de paginación predeterminada.
+     *
+     * @var int
+     */
+    protected $perPage = 20;
 
-  protected $perPage = 20;
+    /**
+     * Atributos asignables masivamente.
+     *
+     * @var array
+     */
+    protected $fillable = ['codigo', 'producto', 'precio_compra', 'precio_venta', 'foto', 'stock', 'id_categoria'];
 
-  /**
-   * Attributes that should be mass-assignable.
-   *
-   * @var array
-   */
-  protected $fillable = ['codigo', 'producto', 'precio_compra', 'precio_venta', 'foto', 'id_categoria'];
+    /**
+     * Relación con la categoría.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class, 'id_categoria');
+    }
 
-  public function categoria()
-  {
-    return $this->belongsTo(Categoria::class);
-  }
+    /**
+     * Relación con los detalles de venta.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function detalleventa()
+    {
+        return $this->hasMany(Detalleventa::class, 'id_producto');
+    }
 }

@@ -20,3 +20,4 @@ class Detalleventa extends Model
 }
 
 
+

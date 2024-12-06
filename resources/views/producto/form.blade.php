@@ -38,6 +38,15 @@
             <!-- Menú desplegable para seleccionar la categoría del producto -->
         </div>
 
+        <div class="form-group col-md-3">
+            {{ Form::label('stock', 'Stock') }}
+            <!-- Etiqueta para el campo "Stock" -->
+            {{ Form::number('stock', $producto->stock, ['class' => 'form-control' . ($errors->has('stock') ? ' is-invalid' : ''), 'placeholder' => 'Stock', 'min' => 0]) }}
+            <!-- Campo numérico para el stock del producto. Valor mínimo de 0 -->
+            {!! $errors->first('stock', '<div class="invalid-feedback">:message</div>') !!}
+            <!-- Muestra un mensaje de error si el campo "stock" no pasa la validación -->
+        </div>
+
         <div class="form-group col-md-4">
             {{ Form::label('foto', 'Foto') }}
             {{ Form::file('foto', ['class' => 'form-control' . ($errors->has('foto') ? ' is-invalid' : ''), 'placeholder' => 'Foto']) }}

@@ -1,88 +1,134 @@
 @extends('adminlte::page')
-<!-- Extiende la plantilla de AdminLTE para aplicar el diseño y estilos del panel administrativo -->
 
-@section('title', 'Dashboard')
-<!-- Define el título de la página como "Inicio" -->
+@section('title', 'Ventas')
 
 @section('content_header')
     <h1>Ventas</h1>
-    <!-- Encabezado de la página que muestra "Ventas" -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 @stop
 
 @section('content')
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="card">
-                <div class="card-header">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span id="card_title">
-                            {{ __('ventas') }}
-                        </span>
-                        <!-- Título de la tarjeta para indicar que se está viendo la lista de ventas -->
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover display responsive nowrap" width="100%"
-                            id="tblVentas">
-                            <thead class="thead">
-                                <tr>
-                                    <th>Id</th>
-                                    <th>Monto</th>
-                                    <th>Cliente</th>
-                                    <th>Fecha/Hora</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                        </table>
-                        <!-- Tabla de ventas usando DataTables para mostrar datos de forma interactiva y dinámica -->
-                    </div>
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h3>Listado de Ventas</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover" id="tblVentas">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Monto</th>
+                                <th>Cliente</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
+</div>
 @stop
 
 @section('css')
     <link href="{{ asset('DataTables/datatables.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
-    <!-- Incluye estilos personalizados y CSS de DataTables para la tabla -->
-@endsection
+@stop
 
 @section('js')
     <script src="{{ asset('DataTables/datatables.min.js') }}"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            new DataTable('#tblVentas', {
+        $(document).ready(function() {
+            $('#tblVentas').DataTable({
                 responsive: true,
                 fixedHeader: true,
-                ajax: {
-                    url: '{{ route('sales.list') }}',
-                    dataSrc: 'data'
-                },
+                processing: true,
+                serverSide: true,
+                ajax: '{{ route('sales.list') }}',
                 columns: [
                     { data: 'id' },
                     { data: 'total' },
-                    { data: 'nombre' },
-                    { data: 'created_at' },
                     {
-                        // Columna de acciones con un botón para ver el ticket de la venta
+                        data: 'cliente.name',
+                        defaultContent: 'Sin cliente'
+                    },
+                    {
+                        data: 'created_at',
+                        render: function(data) {
+                            return new Date(data).toLocaleString();
+                        }
+                    },
+                    {
+                        data: 'estado', // Nueva columna para mostrar el estado
+                        render: function(data, type, row) {
+                            return `<span class="badge badge-${data === 'pendiente' ? 'warning' : (data === 'aprobado' ? 'success' : 'danger')}">${data}</span>`;
+                        }
+                    },
+                    {
                         data: null,
                         render: function(data, type, row) {
-                            return '<a class="btn btn-sm btn-primary" target="_blank" href="/venta/' +
-                                row.id + '/ticket">Ticket</a>';
+                            return `
+                                <button class="btn btn-success btn-sm" onclick="cambiarEstado(${row.id}, 'aprobado')">Aprobar</button>
+                                <button class="btn btn-danger btn-sm" onclick="cambiarEstado(${row.id}, 'cancelado')">Cancelar</button>
+                                <a href="/ventas/${row.id}/detalles" class="btn btn-primary btn-sm">Detalles</a>
+                            `;
                         }
                     }
                 ],
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json',
-                    // Traduce DataTables al español
                 },
-                order: [
-                    [0, 'desc']
-                ]
-                // Ordena la tabla de forma descendente por ID
+                order: [[0, 'desc']]
             });
         });
+        function cambiarEstado(id, estado) {
+    Swal.fire({
+        title: `¿Estás seguro de cambiar el estado a ${estado}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, cambiar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/ventas/${id}/estado`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ estado: estado })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('¡Actualizado!', 'El estado ha sido actualizado.', 'success');
+                    $('#tblVentas').DataTable().ajax.reload(); // Recarga la tabla
+                } else {
+                    Swal.fire('Error', data.error || 'No se pudo actualizar el estado.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'Ocurrió un error en la solicitud.', 'error');
+            });
+        }
+    });
+}
     </script>
+
+
 @stop

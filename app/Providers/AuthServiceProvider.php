@@ -24,3 +24,13 @@ class AuthServiceProvider extends ServiceProvider
         //
     }
 }
+use Illuminate\Support\Facades\Gate;
+
+    Gate::define('is-admin', function ($user) {
+        return $user->role === 'admin'; // Ajusta el campo de rol según tu base de datos
+    });
+
+    // Gate para clientes
+    Gate::define('is-client', function ($user) {
+        return $user->role === 'cliente'; // Ajusta el campo de rol según tu base de datos
+    });

@@ -10,6 +10,8 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\VentaController;
+use App\Http\Controllers\CarritoController;
+use App\Http\Controllers\AdminVentaController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -55,6 +57,38 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/venta', [VentaController::class, 'store'])->name('venta.store');
     Route::get('/venta/{id}/ticket', [VentaController::class, 'ticket'])->name('venta.ticket');
 
+    Route::get('/admin/ventas', [AdminVentaController::class, 'index'])->name('ventas.index');
+    Route::get('/ventas', [AdminVentaController::class, 'index'])->name('ventas.index'); // Vista principal
+    Route::get('/ventas/list', [AdminVentaController::class, 'listarVentas'])->name('ventas.list'); // Endpoint para DataTables
+    Route::post('/ventas/{id}/estado', [AdminVentaController::class, 'cambiarEstado'])->name('ventas.cambiarEstado'); // Cambiar estado
+    Route::get('/ventas/{id}/detalles', [AdminVentaController::class, 'detalles'])->name('ventas.detalles');
 });
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/productosVenta', [CarritoController::class, 'index'])->name('productos.index');
+    Route::post('/carrito/agregar/{producto}', [CarritoController::class, 'agregar'])->name('carrito.agregar');
+    Route::get('/carrito', [CarritoController::class, 'mostrarCarrito'])->name('carrito.mostrar');
+    Route::post('/carrito/comprar', [CarritoController::class, 'finalizarCompra'])->name('carrito.comprar');
+    Route::post('/carrito/remover/{producto}', [CarritoController::class, 'remover'])->name('carrito.remover');
+Route::post('/carrito/comprar', [CarritoController::class, 'finalizarCompra'])->name('carrito.comprar');
+Route::get('/venta', [CarritoController::class, 'index'])->name('productosVenta.index');
+Route::get('/productosVenta', [CarritoController::class, 'index'])->name('productosVenta');
+Route::get('/sales/list', [AdminVentaController::class, 'index'])->name('sales.list');
+Route::post('/ventas/{id}/estado', [AdminVentaController::class, 'cambiarEstado'])->name('ventas.estado');
+
+// Ruta para editar la venta
+Route::get('/ventas/{id}/editar', [VentaController::class, 'edit'])->name('ventas.editar');
+
+// Ruta para imprimir recibo
+Route::get('/ventas/{id}/ticket', [VentaController::class, 'ticket'])->name('ventas.ticket');
+
+// Ruta para eliminar la venta
+Route::delete('/ventas/{id}', [VentaController::class, 'destroy'])->name('ventas.eliminar');
+
+
+
+});
+
+
 
 require __DIR__ . '/auth.php';

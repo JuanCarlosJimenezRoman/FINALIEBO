@@ -42,7 +42,8 @@
 
             <!-- Page Content -->
             <main>
-                {{ $slot }}
+                @yield('content')
+
                 <!-- Espacio para el contenido principal de la página que se incluirá en esta plantilla -->
             </main>
         </div>

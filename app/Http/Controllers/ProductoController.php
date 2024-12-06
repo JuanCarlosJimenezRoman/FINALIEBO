@@ -58,6 +58,7 @@ class ProductoController extends Controller
             'precio_venta' => $request->precio_venta,
             'foto' => $imagePath,
             'id_categoria' => $request->id_categoria,
+            'stock' => $request->stock,
         ]);
 
         return redirect()->route('productos.index')
@@ -119,6 +120,8 @@ class ProductoController extends Controller
                 'precio_venta' => $request->precio_venta,
                 'foto' => $imagePath,
                 'id_categoria' => $request->id_categoria,
+                'stock' => $request->stock, // Guarda el stock en la base de datos
+
             ]
         );
 
