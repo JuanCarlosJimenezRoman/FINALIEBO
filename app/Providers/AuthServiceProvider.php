@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -13,7 +13,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        //
+        // 'App\Models\Model' => 'App\Policies\ModelPolicy',
     ];
 
     /**
@@ -21,16 +21,16 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->registerPolicies();
+
+        // Gate para administradores
+        Gate::define('is-admin', function ($user) {
+            return $user->role === 'admin'; // Ajusta el campo de rol según tu base de datos
+        });
+
+        // Gate para clientes
+        Gate::define('is-client', function ($user) {
+            return $user->role === 'cliente'; // Ajusta el campo de rol según tu base de datos
+        });
     }
 }
-use Illuminate\Support\Facades\Gate;
-
-    Gate::define('is-admin', function ($user) {
-        return $user->role === 'admin'; // Ajusta el campo de rol según tu base de datos
-    });
-
-    // Gate para clientes
-    Gate::define('is-client', function ($user) {
-        return $user->role === 'cliente'; // Ajusta el campo de rol según tu base de datos
-    });

@@ -27,6 +27,6 @@ class UserSeeder extends Seeder
             'role' => 'cliente'
         ]);
 
-        User::factory()->count(10)->create(['role' => 'cliente']);
+        //User::factory()->count(10)->create(['role' => 'cliente']);
     }
 }
