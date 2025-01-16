@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
@@ -13,6 +12,9 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Limpia la tabla de usuarios antes de insertar nuevos registros
+        User::truncate();
+
         User::create([
             'name' => 'SISTEMAS FREE',
             'email' => 'admin@gmail.com',
@@ -27,6 +29,7 @@ class UserSeeder extends Seeder
             'role' => 'cliente'
         ]);
 
-        //User::factory()->count(10)->create(['role' => 'cliente']);
+        // Si necesitas generar usuarios adicionales, descomenta la línea de abajo
+        User::factory()->count(10)->create(['role' => 'cliente']);
     }
 }

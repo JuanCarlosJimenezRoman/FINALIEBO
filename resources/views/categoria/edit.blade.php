@@ -1,36 +1,50 @@
 @extends('adminlte::page')
 
-@section('title', 'Dashboard')  <!-- Define el título de la página como "Dashboard" -->
+@section('title', 'Editar Categoría') <!-- Define un título más descriptivo -->
 
 @section('content_header')
-    <h1>Inicio</h1>  <!-- Encabezado principal de la sección del dashboard -->
+    <h1>Editar Categoría</h1> <!-- Encabezado principal de la sección -->
 @stop
 
 @section('content')
-    <div class="">
+    <div class="row">
         <div class="col-md-12">
-            <!-- Incluye el archivo de errores si existe, para mostrar mensajes de validación o errores al usuario -->
-            @includeif('partials.errors')
+            <!-- Mensajes de éxito -->
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-            <!-- Tarjeta contenedora del formulario de actualización de categoría -->
+            <!-- Muestra mensajes de error si los hay -->
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <!-- Tarjeta para la edición de categoría -->
             <div class="card card-default">
                 <div class="card-header">
-                    <!-- Título de la tarjeta que indica que se está actualizando una categoría existente -->
-                    <span class="card-title">{{ __('Update') }} Categoria</span>
+                    <h3 class="card-title">Actualizar Categoría</h3> <!-- Título de la tarjeta -->
                 </div>
                 <div class="card-body">
-                    <!-- Formulario para actualizar la categoría existente -->
-                    <form method="POST" action="{{ route('categorias.update', $categoria->id) }}" role="form"
-                          enctype="multipart/form-data">
-                        <!-- Especifica que este formulario utiliza el método PATCH, que es adecuado para actualizaciones -->
-                        {{ method_field('PATCH') }}
-                        <!-- Token CSRF para proteger el formulario contra ataques de falsificación de solicitudes -->
-                        @csrf
+                    <!-- Formulario para actualizar la categoría -->
+                    <form method="POST" action="{{ route('categorias.update', $categoria->id) }}" role="form">
+                        @csrf <!-- Token CSRF para proteger contra ataques -->
+                        @method('PATCH') <!-- Método PATCH para actualizaciones -->
 
-                        <!-- Incluye el contenido del formulario desde el archivo 'categoria.form', que contiene los campos necesarios -->
+                        <!-- Incluye el formulario desde 'form.blade.php' -->
                         @include('categoria.form')
-
                     </form>
+                </div>
+                <div class="card-footer">
+                    <!-- Botón para regresar al listado de categorías -->
+                    <a href="{{ route('categorias.index') }}" class="btn btn-secondary">Regresar</a>
                 </div>
             </div>
         </div>

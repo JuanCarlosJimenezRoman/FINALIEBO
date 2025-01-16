@@ -6,6 +6,20 @@ use App\Models\Producto;
 use App\Models\Venta;
 use App\Models\Detalleventa;
 
+class HomeController extends Controller
+{
+    public function index()
+    {
+        // Verifica si el usuario tiene permisos adicionales o roles
+        if (!auth()->check()) {
+            return redirect()->route('login')->with('error', 'Por favor, inicia sesión.');
+        }
+
+        // Redirige a la sección "Mi Carrito" en lugar de mostrar una vista
+        return redirect()->route('carrito.mostrar');
+    }
+}
+
 class CarritoController extends Controller
 {
     // Mostrar productos disponibles
@@ -42,19 +56,16 @@ class CarritoController extends Controller
         return redirect()->route('carrito.mostrar')->with('success', 'Producto agregado al carrito.');
     }
 
-
     public function mostrarCarrito()
-{
-    $carrito = session()->get('carrito', []);
+    {
+        $carrito = session()->get('carrito', []);
 
-    // Calcular el total general
-    $totalGeneral = array_sum(array_map(fn($item) => $item['precio'] * $item['cantidad'], $carrito));
+        // Calcular el total general
+        $totalGeneral = array_sum(array_map(fn($item) => $item['precio'] * $item['cantidad'], $carrito));
 
-    // Retornar la vista con los datos del carrito y el total general
-    return view('carrito.show', compact('carrito', 'totalGeneral'));
-}
-
-
+        // Retornar la vista con los datos del carrito y el total general
+        return view('carrito.show', compact('carrito', 'totalGeneral'));
+    }
 
     public function finalizarCompra()
     {
@@ -71,15 +82,13 @@ class CarritoController extends Controller
             'id_usuario' => auth()->id(), // O el usuario que registra la venta
         ]);
 
-
-            foreach ($carrito as $productoId => $detalle) {
-                Detalleventa::create([
-                    'id_venta' => $venta->id, // ID de la venta
-                    'id_producto' => $productoId, // ID del producto
-                    'cantidad' => $detalle['cantidad'], // Cantidad comprada
-                    'precio' => $detalle['precio'], // Precio unitario
-                ]);
-
+        foreach ($carrito as $productoId => $detalle) {
+            Detalleventa::create([
+                'id_venta' => $venta->id, // ID de la venta
+                'id_producto' => $productoId, // ID del producto
+                'cantidad' => $detalle['cantidad'], // Cantidad comprada
+                'precio' => $detalle['precio'], // Precio unitario
+            ]);
 
             // Actualizar stock del producto
             $producto = Producto::find($productoId);
@@ -89,21 +98,27 @@ class CarritoController extends Controller
         // Vaciar el carrito
         session()->forget('carrito');
 
-
-        return redirect()->route('productosVenta')->with('success', 'Compra realizada con éxito.');
+        return redirect()->route('productosVenta.index')->with('success', 'Compra realizada con éxito.');
     }
-
 
     public function remover($productoId)
-{
-    $carrito = session()->get('carrito', []);
+    {
+        $carrito = session()->get('carrito', []);
 
-    if (isset($carrito[$productoId])) {
-        unset($carrito[$productoId]);
-        session()->put('carrito', $carrito);
+        if (isset($carrito[$productoId])) {
+            unset($carrito[$productoId]);
+            session()->put('carrito', $carrito);
+        }
+
+        return redirect()->route('carrito.mostrar')->with('success', 'Producto eliminado del carrito.');
     }
 
-    return redirect()->route('carrito.mostrar')->with('success', 'Producto eliminado del carrito.');
-}
+    public function mostrarPedidos()
+    {
+        // Obtén todos los pedidos realizados por el usuario autenticado
+        $pedidos = Venta::with('detalles.producto')->where('id_cliente', auth()->id())->get();
 
+        // Retorna una vista con los pedidos
+        return view('pedidos.index', compact('pedidos'));
+    }
 }

@@ -37,7 +37,7 @@
                     @endif
                     <div class="table-responsive">
                         <table class="table table-striped table-hover display responsive nowrap" width="100%" id="tblProducts">
-                            <thead class="thead">
+                            <thead class="thead-dark">
                                 <tr>
                                     <th>Id</th>
                                     <th>Codigo</th>

@@ -3,7 +3,7 @@
 @section('title', 'Editar Venta')
 
 @section('content')
-<h1>Editar Venta #{{ $venta->id }}</h1>
+<h1>Editar Venta {{ $venta->id }}</h1>
 
 <form action="{{ route('ventas.update', $venta->id) }}" method="POST">
     @csrf

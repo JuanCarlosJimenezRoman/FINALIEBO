@@ -3,135 +3,130 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cliente;
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\Request;
 
-/**
- * Class ClienteController
- * @package App\Http\Controllers
- */
 class ClienteController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Muestra una lista de clientes.
      */
     public function index()
     {
-        return view('cliente.index');
+        $clientes = Cliente::with('user')->get(); // Relación con usuarios
+        return view('cliente.index', compact('clientes'));
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Muestra el formulario para crear un nuevo cliente.
      */
     public function create()
     {
-        $cliente = new Cliente();
-        return view('cliente.create', compact('cliente'));
+        return view('cliente.create');
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * Guarda un nuevo cliente en la base de datos.
      */
     public function store(Request $request)
-{
-    $request->validate([
-        'nombre' => 'required|string|max:255',
-        'telefono' => 'required|string|max:15',
-        'direccion' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|min:8',
-    ]);
+    {
+        // Validación de datos
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'telefono' => 'required|string|max:15',
+            'direccion' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8',
+            'plante_educativo' => 'nullable|string|max:255',
+            'region' => 'nullable|string|max:255',
+        ]);
 
-    // Crear el usuario
-    $user = User::create([
-        'name' => $request->nombre,
-        'email' => $request->email,
-        'password' => bcrypt($request->password),
-        'role' => 'cliente', // Asignar rol de cliente
-    ]);
+        // Crear el usuario relacionado
+        $user = User::create([
+            'name' => $request->nombre,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'role' => 'cliente', // Rol predeterminado
+        ]);
 
-    // Crear el cliente y asociarlo con el usuario
-    $cliente = Cliente::create([
-        'nombre' => $request->nombre,
-        'telefono' => $request->telefono,
-        'direccion' => $request->direccion,
-        'user_id' => $user->id, // Relacionar con el usuario recién creado
-    ]);
+        // Crear el cliente y asociarlo al usuario
+        Cliente::create([
+            'nombre' => $request->nombre,
+            'telefono' => $request->telefono,
+            'direccion' => $request->direccion,
+            'user_id' => $user->id, // Asociar al usuario recién creado
+            'plante_educativo' => $request->plante_educativo,
+            'region' => $request->region,
+        ]);
 
-    return redirect()->route('clientes.index')->with('success', 'Cliente creado correctamente.');
-}
-
-
+        return redirect()->route('clientes.index')->with('success', 'Cliente creado correctamente.');
+    }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * Muestra un cliente específico.
      */
     public function show($id)
     {
-        $cliente = Cliente::find($id);
-
+        $cliente = Cliente::with('user')->findOrFail($id);
         return view('cliente.show', compact('cliente'));
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * Muestra el formulario para editar un cliente.
      */
     public function edit($id)
     {
-        $cliente = Cliente::find($id);
-
+        $cliente = Cliente::with('user')->findOrFail($id);
         return view('cliente.edit', compact('cliente'));
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param  Cliente $cliente
-     * @return \Illuminate\Http\Response
+     * Actualiza un cliente en la base de datos.
      */
     public function update(Request $request, Cliente $cliente)
     {
-        request()->validate(Cliente::$rules);
+        // Validar los datos
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'telefono' => 'required|string|max:15',
+            'direccion' => 'required|string|max:255',
+            'plante_educativo' => 'nullable|string|max:255',
+            'region' => 'nullable|string|max:255',
+        ]);
 
-        $cliente->update(
-            [
-                'nombre' => $request->nombre,
-                'telefono' => $request->telefono,
-                'direccion' => $request->direccion,
-            ]
-        );
+        // Actualizar el cliente
+        $cliente->update([
+            'nombre' => $request->nombre,
+            'telefono' => $request->telefono,
+            'direccion' => $request->direccion,
+            'plante_educativo' => $request->plante_educativo,
+            'region' => $request->region,
+        ]);
 
-        return redirect()->route('clientes.index')
-            ->with('success', 'Cliente actualizado');
+        return redirect()->route('clientes.index')->with('success', 'Cliente actualizado correctamente.');
     }
 
     /**
-     * @param int $id
-     * @return \Illuminate\Http\RedirectResponse
-     * @throws \Exception
+     * Elimina un cliente de la base de datos.
      */
     public function destroy($id)
     {
-        $cliente = Cliente::find($id)->delete();
-        return ($cliente) ? 'Cliente eliminado' : 'Error al eliminar';
+        $cliente = Cliente::findOrFail($id);
+
+        // Eliminar el usuario relacionado
+        if ($cliente->user) {
+            $cliente->user->delete();
+        }
+
+        // Eliminar el cliente
+        $cliente->delete();
+
+        return redirect()->route('clientes.index')->with('success', 'Cliente eliminado correctamente.');
     }
-    public function user()
+
+    public function cliente()
 {
-    return $this->belongsTo(User::class);
+    return $this->belongsTo(Cliente::class, 'id_cliente');
 }
 
 }

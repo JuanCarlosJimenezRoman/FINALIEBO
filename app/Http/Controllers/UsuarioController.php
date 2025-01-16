@@ -5,115 +5,79 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Contracts\View\View;
 
 class UsuarioController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function index(): View
     {
-        return view('usuario.index');
+        $usuarios = User::all();
+        return view('usuario.index', compact('usuarios'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function create(): View
     {
-        $usuario = new User();
-        return view('usuario.create', compact('usuario'));
+        $usuario = new User(); // Instancia vacía de User
+        return view('usuario.create', compact('usuario')); // Pasar $usuario a la vista
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        request()->validate(User::$rules);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
+        ]);
 
-        $usuario = User::create([
+        User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('usuarios.index')
-            ->with('success', 'Usuario creado.');
+        return redirect()->route('usuarios.index')->with('success', 'Usuario creado correctamente.');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function show($id): View
     {
-        $usuario = User::find($id);
-
+        $usuario = User::findOrFail($id);
         return view('usuario.show', compact('usuario'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function edit($id): View
     {
-        $usuario = User::find($id);
-
+        $usuario = User::findOrFail($id);
         return view('usuario.edit', compact('usuario'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param  User $usuario
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, User $usuario)
+    public function update(Request $request, User $usuario): RedirectResponse
     {
-        request()->validate([
-            'name' => 'required',
-            'email' => 'required',
-            'password' => 'nullable|min:6'
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $usuario->id,
+            'password' => 'nullable|string|min:6',
         ]);
 
         $data = [
             'name' => $request->name,
             'email' => $request->email,
         ];
-        
-        // Actualiza la contraseña solo si se proporciona un nuevo valor
+
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
-        
+
         $usuario->update($data);
 
-        return redirect()->route('usuarios.index')
-            ->with('success', 'Usuario actualizado');
+        return redirect()->route('usuarios.index')->with('success', 'Usuario actualizado correctamente.');
     }
 
-    /**
-     * @param int $id
-     * @return \Illuminate\Http\RedirectResponse
-     * @throws \Exception
-     */
-    public function destroy($id)
+    public function destroy($id): RedirectResponse
     {
-        $usuario = User::find($id)->delete();
-        return ($usuario) ? 'Usuario eliminado' : 'Error al eliminar';
+        $usuario = User::findOrFail($id);
+        $usuario->delete();
+
+        return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado correctamente.');
     }
 }

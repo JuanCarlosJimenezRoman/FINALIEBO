@@ -24,11 +24,49 @@
                         <!-- Token CSRF para proteger el formulario contra ataques de falsificación de solicitudes -->
                         @csrf
 
-                        <!-- Incluye el contenido del formulario desde el archivo 'cliente.form' -->
-                        @include('cliente.form')
+                        <div class="form-group">
+                            <label for="nombre">Nombre</label>
+                            <input type="text" name="nombre" id="nombre" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Correo Electrónico</label>
+                            <input type="email" name="email" id="email" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="telefono">Teléfono</label>
+                            <input type="text" name="telefono" id="telefono" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="direccion">Dirección</label>
+                            <input type="text" name="direccion" id="direccion" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Contraseña</label>
+                            <input type="password" name="password" id="password" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="plante_educativo">Plante Educativo</label>
+                            <input type="text" name="plante_educativo" id="plante_educativo" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="region">Región</label>
+                            <input type="text" name="region" id="region" class="form-control">
+                        </div>
+
+                        <div class="mt-3 d-flex justify-content-between">
+                            <a href="{{ route('clientes.index') }}" class="btn btn-danger">Cancelar</a>
+                            <button type="submit" class="btn btn-success">Guardar</button>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 @stop
+

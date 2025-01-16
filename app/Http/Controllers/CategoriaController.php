@@ -5,106 +5,92 @@ namespace App\Http\Controllers;
 use App\Models\Categoria;
 use Illuminate\Http\Request;
 
-/**
- * Class CategoriaController
- * @package App\Http\Controllers
- */
 class CategoriaController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Muestra una lista de categorías.
      */
     public function index()
     {
-        return view('categoria.index');
+        $categorias = Categoria::all();
+        return view('categoria.index', compact('categorias'));
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Muestra el formulario para crear una nueva categoría.
      */
     public function create()
     {
+        // Enviar una instancia vacía de Categoria para evitar errores en la vista
         $categoria = new Categoria();
         return view('categoria.create', compact('categoria'));
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * Guarda una nueva categoría en la base de datos.
      */
+
     public function store(Request $request)
-    {
-        request()->validate(Categoria::$rules);
+{
+    $request->validate([
+        'nombre' => 'required|string|max:255|unique:categorias,nombre',
+        'anio' => 'required|integer|min:2000|max:2100',
+        'ciclo' => 'required|string|in:A,B',
+    ]);
 
-        $categoria = Categoria::create([
-            'nombre' => $request->nombre
-        ]);
+    Categoria::create([
+        'nombre' => $request->nombre,
+        'anio' => $request->anio,
+        'ciclo' => $request->ciclo,
+    ]);
 
-        return redirect()->route('categorias.index')
-            ->with('success', 'Categoria creado.');
-    }
+    return redirect()->route('categorias.index')->with('success', 'Categoría creada exitosamente.');
+}
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $categoria = Categoria::find($id);
-
-        return view('categoria.show', compact('categoria'));
-    }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * Muestra el formulario para editar una categoría.
      */
     public function edit($id)
     {
-        $categoria = Categoria::find($id);
-
+        $categoria = Categoria::findOrFail($id);
         return view('categoria.edit', compact('categoria'));
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param  Categoria $categoria
-     * @return \Illuminate\Http\Response
+     * Actualiza una categoría en la base de datos.
      */
-    public function update(Request $request, Categoria $categoria)
+    public function update(Request $request, $id)
     {
-        request()->validate(Categoria::$rules);
+        $categoria = Categoria::findOrFail($id);
 
-        $categoria->update(
-            [
-                'nombre' => $request->nombre
-            ]
-        );
+        // Validación
+        $request->validate([
+            'nombre' => 'required|string|max:255|unique:categorias,nombre,' . $categoria->id,
+            'anio' => 'required|integer|min:2000|max:2100',
+            'ciclo' => 'required|string|in:A,B',
+        ]);
 
-        return redirect()->route('categorias.index')
-            ->with('success', 'Categoria actualizado');
+        // Actualizar la categoría
+        $categoria->update([
+            'nombre' => $request->nombre,
+            'anio' => $request->anio,
+            'ciclo' => $request->ciclo,
+        ]);
+
+        return redirect()->route('categorias.index')->with('success', 'Categoría actualizada exitosamente.');
     }
 
     /**
-     * @param int $id
-     * @return \Illuminate\Http\RedirectResponse
-     * @throws \Exception
+     * Elimina una categoría de la base de datos.
      */
     public function destroy($id)
     {
-        $categoria = Categoria::find($id)->delete();
-        return ($categoria) ? 'Categoria eliminado' : 'Error al eliminar';
+        $categoria = Categoria::findOrFail($id);
+
+        // Eliminar la categoría
+        $categoria->delete();
+
+        return redirect()->route('categorias.index')->with('success', 'Categoría eliminada exitosamente.');
     }
 }

@@ -18,5 +18,12 @@ class Venta extends Model
     {
         return $this->hasMany(Detalleventa::class, 'id_venta'); // Relación con los detalles de venta
     }
+    public function productos()
+{
+    return $this->belongsToMany(Producto::class, 'venta_producto', 'id_venta', 'id_producto')
+                ->withPivot('cantidad', 'precio_unitario')
+                ->withTimestamps();
+}
+
 
 }

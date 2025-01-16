@@ -25,6 +25,16 @@
             {{ Form::text('direccion', $cliente->direccion ?? old('direccion'), ['class' => 'form-control' . ($errors->has('direccion') ? ' is-invalid' : ''), 'placeholder' => 'Dirección']) }}
             {!! $errors->first('direccion', '<div class="invalid-feedback">:message</div>') !!}
         </div>
+        <div class="form-group col-md-6">
+            {{ Form::label('plante_educativo', 'Plantel Educativo') }}
+            {{ Form::text('plante_educativo', $cliente->plante_educativo ?? old('plante_educativo'), ['class' => 'form-control' . ($errors->has('plante_educativo') ? ' is-invalid' : ''), 'placeholder' => 'Plantel Educativo']) }}
+            {!! $errors->first('plante_educativo', '<div class="invalid-feedback">:message</div>') !!}
+        </div>
+        <div class="form-group col-md-6">
+            {{ Form::label('region', 'Región') }}
+            {{ Form::text('region', $cliente->region ?? old('region'), ['class' => 'form-control' . ($errors->has('region') ? ' is-invalid' : ''), 'placeholder' => 'Región']) }}
+            {!! $errors->first('region', '<div class="invalid-feedback">:message</div>') !!}
+        </div>
     </div>
     <div class="box-footer mt20 text-right">
         <a href="/clientes" class="btn btn-danger">{{ __('Cancel') }}</a>

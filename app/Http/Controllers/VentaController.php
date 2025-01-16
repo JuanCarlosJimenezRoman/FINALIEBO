@@ -10,20 +10,14 @@ use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\View;
-
 use Illuminate\Http\Request;
 
 /**
- * Class ClienteController
+ * Class VentaController
  * @package App\Http\Controllers
  */
 class VentaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         return view('venta.index');
@@ -33,72 +27,71 @@ class VentaController extends Controller
     {
         $datosVenta = $request->all();
 
-        $id_cliente = $datosVenta['id_cliente'];
-        //registrar venta
-        $total = Cart::subtotal();
+        $id_cliente = $datosVenta['id_cliente'] ?? null;
+        $total = (float) Cart::subtotal();
+
         if ($total > 0) {
             $userId = Auth::id();
             $sale = Venta::create([
                 'total' => $total,
                 'id_cliente' => $id_cliente,
                 'id_usuario' => $userId,
+                'estado' => 'pendiente',
             ]);
+
             if ($sale) {
                 foreach (Cart::content() as $item) {
                     Detalleventa::create([
                         'precio' => $item->price,
                         'cantidad' => $item->qty,
                         'id_producto' => $item->id,
-                        'id_venta' => $sale->id
+                        'id_venta' => $sale->id,
                     ]);
                 }
                 Cart::destroy();
                 return response()->json([
                     'title' => 'VENTA GENERADA',
                     'icon' => 'success',
-                    'ticket' => $sale->id
+                    'ticket' => $sale->id,
                 ]);
             }
-        } else {
-            return response()->json([
-                'title' => 'CARRITO VACIO',
-                'icon' => 'warning'
-            ]);
         }
+
+        return response()->json([
+            'title' => 'CARRITO VACÍO',
+            'icon' => 'warning',
+        ]);
     }
 
-    public function tickekt($id)
+    public function ticket($id)
     {
-        $data['company'] = Compania::first();
+        $venta = Venta::with(['cliente', 'detalleventa.producto'])->find($id);
 
-        $data['venta'] = Venta::join('clientes', 'ventas.id_cliente', '=', 'clientes.id')
-            ->select('ventas.*', 'clientes.nombre', 'clientes.telefono', 'clientes.direccion')
-            ->where('ventas.id', $id)
-            ->first();
+        if (!$venta) {
+            return redirect()->route('venta.index')->with('error', 'Venta no encontrada.');
+        }
 
-        $data['productos'] = Detalleventa::join('productos', 'detalleventa.id_producto', '=', 'productos.id')
-            ->select('detalleventa.*', 'productos.producto')
-            ->where('detalleventa.id_venta', $id)
-            ->get();
+        $company = [
+            'nombre' => 'INSTITUTO DE ESTUDIO DE BACHILLERATO DE OAXACA',
+            'direccion' => 'Dalias 321, Reforma, 68050 Oaxaca de Juárez, Oax.',
+            'telefono' => '951 518 6601',
+        ];
 
-        $fecha_venta = $data['venta']['created_at'];
-        $data['fecha'] = date('d/m/Y', strtotime($fecha_venta));
-        $data['hora'] = date('h:i A', strtotime($fecha_venta));
-        // Generar el contenido del ticket en HTML
-        $html = View::make('venta.ticket', $data)->render();
-        //Pdf::setOption(['dpi' => 150, 'defaultFont' => 'sans-serif']);
-        Pdf::setOption(['dpi' => 150, 'defaultFont' => 'sans-serif']);
-        // Generar el PDF utilizando laravel-dompdf
-        //$pdf = Pdf::loadHTML($html)->setPaper([0, 0, 226.77, 500], 'portrait')->setWarnings(false);
-        $pdf = Pdf::loadHTML($html)->setPaper([0, 0, 140, 500], 'portrait')->setWarnings(false);
-
-        return $pdf->stream('ticket.pdf');
+        return view('tickets.ticket', [
+            'venta' => $venta,
+            'productos' => $venta->detalleventa,
+            'fecha' => now()->format('d/m/Y'),
+            'hora' => now()->format('H:i:s'),
+            'company' => $company,
+        ]);
     }
 
     public function show()
-    {
-        return view('venta.show');
-    }
+{
+    $ventas = Venta::all(); // Cargar todas las ventas
+    return view('venta.show', compact('ventas'));
+}
+
 
     public function cliente(Request $request)
     {
@@ -110,84 +103,50 @@ class VentaController extends Controller
         return response()->json($clients);
     }
 
-
-public function edit($id)
-{
-    $venta = Venta::with('detalleventa.producto', 'cliente')->findOrFail($id);
-    return view('ventas.edit', compact('venta'));
-}
-
-public function update(Request $request, $id)
-{
-    $venta = Venta::findOrFail($id);
-
-    // Actualizar datos generales de la venta
-    $venta->estado = $request->input('estado', $venta->estado);
-    $venta->save();
-
-    // Actualizar detalles (productos)
-    foreach ($request->input('productos', []) as $detalleId => $detalleData) {
-        $detalle = Detalleventa::findOrFail($detalleId);
-        $detalle->cantidad = $detalleData['cantidad'];
-        $detalle->precio = $detalleData['precio'];
-        $detalle->save();
+    public function edit($id)
+    {
+        $venta = Venta::with('detalleventa.producto', 'cliente')->findOrFail($id);
+        return view('ventas.edit', compact('venta'));
     }
 
-    return redirect()->route('ventas.detalles', $venta->id)->with('success', 'Venta actualizada correctamente.');
-}
+    public function update(Request $request, $id)
+    {
+        $venta = Venta::findOrFail($id);
 
-public function ticket($id)
-{
-    // Obtén los datos de la compañía
-    $data['company'] = Compania::first();
+        $venta->estado = $request->input('estado', $venta->estado);
+        $venta->save();
 
-    // Obtén la venta con el cliente
-    $data['venta'] = Venta::with('cliente')->find($id);
+        foreach ($request->input('productos', []) as $detalleId => $detalleData) {
+            $detalle = Detalleventa::findOrFail($detalleId);
+            $detalle->cantidad = $detalleData['cantidad'];
+            $detalle->precio = $detalleData['precio'];
+            $detalle->save();
+        }
 
-    // Si no se encuentra la venta, lanza un error
-    if (!$data['venta']) {
-        return redirect()->route('venta.index')->with('error', 'Venta no encontrada.');
+        return redirect()->route('ventas.detalles', $venta->id)->with('success', 'Venta actualizada correctamente.');
     }
 
-    // Obtén los productos asociados a la venta
-    $data['productos'] = Detalleventa::with('producto')
-        ->where('id_venta', $id)
-        ->get();
+    public function destroy($id)
+    {
+        $venta = Venta::findOrFail($id);
 
-    if ($data['productos']->isEmpty()) {
-        return redirect()->route('venta.index')->with('error', 'No hay productos asociados a esta venta.');
+        $venta->detalleventa()->delete();
+        $venta->delete();
+
+        return redirect()->route('sales.list')->with('success', 'Venta eliminada correctamente.');
     }
 
-    // Formatea la fecha y la hora
-    $fecha_venta = $data['venta']->created_at ?? now();
-    $data['fecha'] = $fecha_venta->format('d/m/Y');
-    $data['hora'] = $fecha_venta->format('h:i A');
+    public function detalles($id)
+    {
+        // Carga la venta por su ID con sus relaciones
+        $venta = Venta::with(['cliente', 'productos'])->find($id);
 
-    // Genera el contenido del ticket en HTML
-    $html = View::make('ventas.ticket', $data)->render();
+        // Si no se encuentra la venta, retorna un error 404
+        if (!$venta) {
+            abort(404, 'La venta no fue encontrada.');
+        }
 
-    // Genera el PDF utilizando laravel-dompdf
-    Pdf::setOption(['dpi' => 150, 'defaultFont' => 'sans-serif']);
-    $pdf = Pdf::loadHTML($html)->setPaper([0, 0, 140, 500], 'portrait')->setWarnings(false);
-
-    // Devuelve el PDF como respuesta
-    //return $pdf->stream('ticket.pdf');
-    return view('venta.show');
-}
-
-
-
-public function destroy($id)
-{
-    $venta = Venta::findOrFail($id);
-
-    // Eliminar los detalles asociados primero
-    $venta->detalleventa()->delete();
-
-    // Luego eliminar la venta
-    $venta->delete();
-
-    return redirect()->route('sales.list')->with('success', 'Venta eliminada correctamente.');
-}
-
+        // Retorna la vista con los datos de la venta
+        return view('venta.detalles', compact('venta'));
+    }
 }

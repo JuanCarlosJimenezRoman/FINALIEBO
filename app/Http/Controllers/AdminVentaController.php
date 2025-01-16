@@ -38,10 +38,10 @@ public function cambiarEstado(Request $request, $id)
 
 public function detalles($id)
 {
-    $venta = Venta::with('detalleventa.producto', 'cliente')->findOrFail($id);
+    $venta = Venta::with(['cliente', 'productos'])->findOrFail($id);
 
     if (!$venta) {
-        return redirect()->route('sales.list')->with('error', 'Venta no encontrada.');
+        abort(404, 'La venta no fue encontrada.');
     }
 
     return view('venta.detalles', compact('venta'));

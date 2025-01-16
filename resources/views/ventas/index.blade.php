@@ -3,7 +3,7 @@
 @section('content')
 <h1>Ventas Realizadas</h1>
 <table>
-    <thead>
+    <thead class="thead-dark">
         <tr>
             <th>Cliente</th>
             <th>Total</th>
@@ -11,6 +11,7 @@
             <th>Detalles</th>
         </tr>
     </thead>
+
     <tbody>
         @foreach ($ventas as $venta)
             <tr>

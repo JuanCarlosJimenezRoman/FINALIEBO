@@ -70,4 +70,11 @@ class Producto extends Model
     {
         return $this->hasMany(Detalleventa::class, 'id_producto');
     }
+    public function ventas()
+{
+    return $this->belongsToMany(Venta::class, 'venta_producto', 'id_producto', 'id_venta')
+                ->withPivot('cantidad', 'precio_unitario')
+                ->withTimestamps();
+}
+
 }

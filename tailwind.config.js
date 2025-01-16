@@ -11,6 +11,9 @@ export default {
 
     theme: {
         extend: {
+            colors: {
+                customGreen: '#285C4D', // Agrega tu color personalizado
+              },
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },

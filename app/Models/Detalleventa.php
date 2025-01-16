@@ -17,6 +17,17 @@ class Detalleventa extends Model
     {
         return $this->belongsTo(Producto::class, 'id_producto');
     }
+    public function detalles($id)
+{
+    $venta = Venta::with(['cliente', 'productos'])->findOrFail($id);
+
+    if (!$venta) {
+        abort(404, 'La venta no fue encontrada.');
+    }
+
+    return view('venta.detalles', compact('venta'));
+}
+
 }
 
 

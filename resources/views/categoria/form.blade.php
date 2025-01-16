@@ -1,23 +1,24 @@
-<div class="box box-info padding-1">
-    <div class="box-body row">
-        <div class="form-group col-md-12">
-            <!-- Etiqueta para el campo de nombre -->
-            {{ Form::label('nombre') }}
+<div class="form-group">
+    <!-- Campo para el nombre de la categoría -->
+    {{ Form::label('nombre', 'Nombre de la Categoría') }}
+    {{ Form::text('nombre', $categoria->nombre ?? '', ['class' => 'form-control', 'placeholder' => 'Nombre de la Categoría']) }}
+</div>
 
-            <!-- Campo de texto para el nombre de la categoría, relleno con el valor actual de $categoria->nombre -->
-            {{ Form::text('nombre', $categoria->nombre, ['class' => 'form-control' . ($errors->has('nombre') ? ' is-invalid' : ''), 'placeholder' => 'Nombre']) }}
+<div class="form-group">
+    <!-- Campo para el año del ciclo escolar -->
+    {{ Form::label('anio', 'Año del Ciclo Escolar') }}
+    {{ Form::number('anio', $categoria->anio ?? '', ['class' => 'form-control', 'placeholder' => 'Ejemplo: 2025']) }}
+</div>
 
-            <!-- Mensaje de error para el campo nombre si ocurre una validación fallida -->
-            {!! $errors->first('nombre', '<div class="invalid-feedback">:message</div>') !!}
-        </div>
-    </div>
+<div class="form-group">
+    <!-- Campo para seleccionar el ciclo escolar (A/B) -->
+    {{ Form::label('ciclo', 'Ciclo Escolar') }}
+    {{ Form::select('ciclo', ['A' => 'A', 'B' => 'B'], $categoria->ciclo ?? '', ['class' => 'form-control', 'placeholder' => 'Seleccionar Ciclo']) }}
+</div>
 
-    <!-- Footer del formulario con botones de cancelar y enviar -->
-    <div class="box-footer mt20 text-right">
-        <!-- Botón para cancelar y volver a la lista de categorías -->
-        <a href="/categorias" class="btn btn-danger">{{ __('Cancel') }}</a>
-
-        <!-- Botón para enviar el formulario -->
-        <button type="submit" class="btn btn-primary">{{ __('Submit') }}</button>
-    </div>
+<div class="form-group">
+    <!-- Botón para guardar la categoría -->
+    {{ Form::submit('Guardar', ['class' => 'btn btn-primary']) }}
+    <!-- Botón para cancelar -->
+    <a href="{{ route('categorias.index') }}" class="btn btn-secondary">Cancelar</a>
 </div>
