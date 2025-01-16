@@ -84,6 +84,29 @@ Route::middleware(['auth', 'admin'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     // Carrito y ventas
     Route::get('/venta/show', [VentaController::class, 'show'])->name('venta.show');
+    Route::get('/carrito', [CarritoController::class, 'mostrarCarrito'])->name('carrito.mostrar');
+    Route::post('/carrito/agregar/{producto}', [CarritoController::class, 'agregar'])->name('carrito.agregar');
+    Route::post('/carrito/remover/{producto}', [CarritoController::class, 'remover'])->name('carrito.remover');
+    Route::post('/carrito/comprar', [CarritoController::class, 'finalizarCompra'])->name('carrito.comprar');
+    Route::get('/carrito/venta/show', [VentaController::class, 'show'])->name('venta.show');
+    Route::get('/carrito/venta/{id}/detalles', [VentaController::class, 'detalles'])->name('venta.detalles');
+    Route::get('/carrito/venta/{id}/ticket', [VentaController::class, 'ticket'])->name('venta.ticket');
+    Route::delete('/carrito/venta/{id}', [VentaController::class, 'destroy'])->name('venta.eliminar');
+    Route::get('/carrito/venta/{id}/editar', [VentaController::class, 'edit'])->name('venta.editar');
+    Route::post('/carrito/venta/{id}', [VentaController::class, 'update'])->name('venta.update');
+    Route::get('/carrito/venta/{id}/eliminar', [VentaController::class, 'destroy'])->name('venta.eliminar');
+    Route::get('/carrito/venta/{id}/editar', [VentaController::class, 'edit'])->name('venta.editar');
+    Route::post('/carrito/venta/{id}', [VentaController::class, 'update'])->name('venta.update');
+    Route::get('/carrito/venta/{id}/eliminar', [VentaController::class, 'destroy'])->name('venta.eliminar');
+    Route::get('/carrito/venta/{id}/editar', [VentaController::class, 'edit'])->name('venta.editar');
+    Route::post('/carrito/venta/{id}', [VentaController::class, 'update'])->name('venta.update');
+    Route::get('/carrito/venta/{id}/eliminar', [VentaController::class, 'destroy'])->name('venta.eliminar');
+    Route::get('/carrito/venta/{id}/editar', [VentaController::class, 'edit'])->name('venta.editar');
+    Route::get('/venta/cliente', [VentaController::class, 'buscarCliente'])->name('venta.cliente');
+    Route::get('/venta/cliente', [VentaController::class, 'cliente'])->name('venta.cliente');
+    Route::post('/', [VentaController::class, 'store'])->name('venta.store');
+
+
 
     Route::prefix('carrito')->group(function () {
         Route::get('/', [CarritoController::class, 'mostrarCarrito'])->name('carrito.mostrar');
@@ -91,9 +114,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/remover/{producto}', [CarritoController::class, 'remover'])->name('carrito.remover');
         Route::post('/comprar', [CarritoController::class, 'finalizarCompra'])->name('carrito.comprar');
         Route::get('/venta/show', [VentaController::class, 'show'])->name('venta.show');
-        Route::get('/ventas/{id}/detalles', [VentaController::class, 'detalles'])->name('venta
-        .detalles');
-
+        Route::get('/ventas/{id}/detalles', [VentaController::class, 'detalles'])->name('venta.detalles');
+        Route::get('/ventas/{id}/ticket', [VentaController::class, 'ticket'])->name('ventas.ticket');
     });
 
     Route::prefix('venta')->group(function () {
