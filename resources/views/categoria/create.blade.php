@@ -4,6 +4,7 @@
 
 @section('content_header')
     <h1>Crear Nueva Categoría</h1> <!-- Encabezado principal de la sección -->
+
 @stop
 
 @section('content')

@@ -2,7 +2,9 @@
 
 @section('title', 'Mi Carrito')
 
+
 @section('content')
+
 <div class="container">
     <h1 class="text-center mb-4">Mi Carrito</h1>
     <div class="table-responsive">

@@ -8,40 +8,37 @@
             padding: 0;
         }
 
-        .ticket {
-            width: 140pt;
-            padding: 1px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            margin: 0;
+            padding: 0;
+            position: relative;
         }
 
-        .logo {
-            text-align: center;
-            margin-bottom: 0px;
+        .background {
+            position: absolute;
+            top: 0;
+            left: 30px; /* Más separada del margen izquierdo */
+            height: 100%;
+            width: 170px; /* Imagen más delgada */
         }
 
-        .logo img {
-            max-width: 50px;
-            height: auto;
+        .content {
+            position: relative;
+            margin-left: 190px; /* Ajusta el contenido un poco a la izquierda pero dejando espacio */
+            padding: 10px;
         }
 
         .business-info {
             text-align: center;
             font-size: 14px;
+            margin-bottom: 20px;
         }
 
-        .ticket-details {
-            margin-top: 20px;
-            padding-top: 10px;
-        }
-
-        .ticket-details h3 {
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-
-        .ticket-details p {
-            font-size: 12px;
-            margin: 5px 0;
+        .divider {
+            border-top: 1px dashed #000;
+            margin: 10px 0;
         }
 
         table {
@@ -52,74 +49,73 @@
 
         th,
         td {
-            padding: 1px;
+            padding: 5px;
             text-align: left;
-            font-size: 11px;
+            font-size: 12px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f5f5f5;
+            font-weight: bold;
         }
 
         .text-right {
             text-align: right;
         }
+
+        .total {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 10px;
+        }
     </style>
 </head>
 
 <body>
-    <div class="ticket">
-        <div class="business-info">
-            <h3>{{$company->nombre}}</h3>
-            <p>{{$company->direccion}}</p>
-            <p>{{$company->telefono}}</p>
-            <p>{{$company->correo}}</p>
-            <!-- Información de la empresa (nombre, dirección, teléfono y correo) obtenida del objeto $company -->
-        </div>
-        ==================================
-        <div class="ticket-details">
-            <p>Fecha: {{ $fecha . ' ' . $hora }}</p>
-            <p>Folio: {{ $venta->id }}</p>
-            ==================================
-            <p>Cliente: {{ $venta->nombre}}</p>
-            <p>Teléfono: {{ $venta->telefono }}</p>
-            <p>Dirección: {{ $venta->direccion }}</p>
-            <!-- Muestra la fecha, ID de la venta, y los datos del cliente (nombre, teléfono, dirección) -->
+    <!-- Fondo con el marco -->
+    <div class="background">
+        <img src="{{ public_path('img/Marco2.png') }}" alt="Marco izquierdo">
+    </div>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Cant</th>
-                        <th>Producto</th>
-                        <th>Importe</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="3">==================================</td>
-                    </tr>
-                    @foreach ($productos as $producto)
-                        <tr>
-                            <td>{{ $producto->cantidad }}</td>
-                            <td>{{ $producto->producto }}</td>
-                            <td>{{ $producto->precio }}</td>
-                        </tr>
-                        <!-- Por cada producto en la venta, muestra la cantidad, nombre del producto y precio -->
-                    @endforeach
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="3">==================================</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">Total</td>
-                        <td><h4>{{ $venta->total }}</h4></td>
-                        <!-- Total de la venta mostrado en la última fila -->
-                    </tr>
-                </tfoot>
-            </table>
+    <!-- Contenido del ticket -->
+    <div class="content">
+        <div class="business-info">
+            <h3>{{ $company['nombre'] }}</h3>
+            <p>{{ $company['direccion'] }}</p>
+            <p>Tel: {{ $company['telefono'] }}</p>
         </div>
+        <div class="divider"></div>
+        <p><strong>Fecha:</strong> {{ $fecha }}</p>
+        <p><strong>Hora:</strong> {{ $hora }}</p>
+        <p><strong>Venta ID:</strong> #{{ $venta->id }}</p>
+        <div class="divider"></div>
+        <p><strong>Cliente:</strong> {{ $venta->cliente->name ?? 'Sin cliente' }}</p>
+        <p><strong>Teléfono:</strong> {{ $venta->cliente->telefono ?? 'N/A' }}</p>
+        <p><strong>Dirección:</strong> {{ $venta->cliente->direccion ?? 'N/A' }}</p>
+        <div class="divider"></div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Cant</th>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($productos as $producto)
+                    <tr>
+                        <td>{{ $producto->cantidad }}</td>
+                        <td>{{ $producto->producto->producto ?? 'Producto eliminado' }}</td>
+                        <td>${{ number_format($producto->precio, 2) }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        <p class="total">Total: ${{ number_format($venta->total, 2) }}</p>
     </div>
 </body>
 </html>
-
-@php
-    header("Content-type: application/pdf");
-    // Configuración para que el navegador interprete el contenido como un archivo PDF
-@endphp

@@ -106,6 +106,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/venta/cliente', [VentaController::class, 'cliente'])->name('venta.cliente');
     Route::post('/', [VentaController::class, 'store'])->name('venta.store');
 
+    Route::get('/ventas/{id}/ticket', [VentaController::class, 'ticket'])->name('ventas.ticket');
+    Route::get('/ventas/{id}/detalles', [VentaController::class, 'detalles'])->name('venta.detalles');
+    Route::delete('/ventas/{id}', [VentaController::class, 'destroy'])->name('ventas.eliminar');
+
 
 
     Route::prefix('carrito')->group(function () {
@@ -124,6 +128,12 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{id}', [VentaController::class, 'destroy'])->name('ventas.eliminar');
         Route::get('/{id}/editar', [VentaController::class, 'edit'])->name('ventas.editar');
         Route::post('/{id}', [VentaController::class, 'update'])->name('ventas.update');
+        Route::get('/ventas/{id}/ticket', [VentaController::class, 'ticket'])->name('ventas.ticket');
+        Route::get('/{id}/detalles', [VentaController::class, 'detalles'])->name('venta.detalles');
+        Route::get('/cliente', [VentaController::class, 'buscarCliente'])->name('venta.cliente');
+        Route::get('/cliente', [VentaController::class, 'cliente'])->name('venta.cliente');
+        Route::get('/venta/{id}/ticket', [VentaController::class, 'ticket'])->name('ventas.ticket');
+
     });
 });
 
