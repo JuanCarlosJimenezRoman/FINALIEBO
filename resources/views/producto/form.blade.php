@@ -54,8 +54,8 @@
             <!-- Campo de archivo para cargar la foto del producto. Muestra un error si no cumple con la validación -->
 
             @if ($producto->foto)
-                <img src="{{ asset('storage/' . $producto->foto) }}" alt="Imagen actual" style="max-width: 100px; max-height: 100px;">
-                <!-- Muestra la imagen actual del producto si existe -->
+            <img src="{{ asset('storage/uploads/' . $producto->foto) }}" alt="Imagen del Producto" style="max-width: 100px; max-height: 100px;">
+            <!-- Muestra la imagen actual del producto si existe -->
             @else
                 <p>Sin imagen</p>
                 <!-- Muestra un mensaje si no hay imagen disponible -->

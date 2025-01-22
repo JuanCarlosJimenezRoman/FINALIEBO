@@ -20,7 +20,8 @@
                             <!-- Muestra el título de la sección como "Producto" -->
                         </span>
                         <div class="float-right">
-                            <a href="{{ route('productos.create') }}" class="btn btn-primary btn-sm float-right" data-placement="left">
+                            <a href="{{ route('productos.create') }}" class="btn btn-primary btn-sm float-right"
+                                data-placement="left">
                                 {{ __('Create New') }}
                             </a>
                             <!-- Botón para crear un nuevo producto, redirige a la vista de creación -->
@@ -36,7 +37,8 @@
                         </div>
                     @endif
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover display responsive nowrap" width="100%" id="tblProducts">
+                        <table class="table table-striped table-hover display responsive nowrap" width="100%"
+                            id="tblProducts">
                             <thead class="thead-dark">
                                 <tr>
                                     <th>Id</th>
@@ -75,32 +77,49 @@
                     url: '{{ route('products.list') }}',
                     dataSrc: 'data'
                 },
-                columns: [
-                    { data: 'id' },
-                    { data: 'codigo' },
-                    { data: 'producto' },
-                    { data: 'precio_compra' },
-                    { data: 'precio_venta' },
+                columns: [{
+                        data: 'id'
+                    },
+                    {
+                        data: 'codigo'
+                    },
+                    {
+                        data: 'producto'
+                    },
+                    {
+                        data: 'precio_compra'
+                    },
+                    {
+                        data: 'precio_venta'
+                    },
                     {
                         data: 'foto',
                         render: function(data, type, row) {
-                            return data ? '<img src="storage/' + data + '" alt="Imagen del Producto" style="max-width: 100px; max-height: 100px;">' : 'Sin imagen';
-                        }
+                            return data ? '<img src="storage/uploads/' + data +
+                                '" alt="Imagen del Producto" style="max-width: 100px; max-height: 100px;">' :
+                                'Sin imagen';
+                        },
+
+
                         // Columna de imagen. Muestra la imagen si existe; de lo contrario, indica "Sin imagen"
                     },
                     {
                         data: null,
                         render: function(data, type, row) {
                             // Columna para botones de acciones (editar y eliminar)
-                            return '<a class="btn btn-sm btn-primary" href="/productos/' + row.id + '/edit">Editar</a>' +
-                                   '<button class="btn btn-sm btn-danger" onclick="deleteProduct(' + row.id + ')">Eliminar</button>';
+                            return '<a class="btn btn-sm btn-primary" href="/productos/' + row.id +
+                                '/edit">Editar</a>' +
+                                '<button class="btn btn-sm btn-danger" onclick="deleteProduct(' +
+                                row.id + ')">Eliminar</button>';
                         }
                     }
                 ],
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json',
                 },
-                order: [[0, 'desc']]
+                order: [
+                    [0, 'desc']
+                ]
                 // Ordena la tabla por ID en orden descendente
             });
         });
@@ -118,20 +137,20 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     fetch('/productos/' + productId, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                    .then(response => response.text())
-                    .then(data => {
-                        $('#tblProducts').DataTable().ajax.reload();
-                        // Recarga la tabla para actualizar la lista de productos después de eliminar uno
-                    })
-                    .catch(error => {
-                        console.error('Error al eliminar el producto:', error);
-                    });
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.text())
+                        .then(data => {
+                            $('#tblProducts').DataTable().ajax.reload();
+                            // Recarga la tabla para actualizar la lista de productos después de eliminar uno
+                        })
+                        .catch(error => {
+                            console.error('Error al eliminar el producto:', error);
+                        });
                 }
             });
         }
