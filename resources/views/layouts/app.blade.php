@@ -6,9 +6,13 @@
         <a href="{{ route('pedidos') }}" class="flex items-center">
             <img src="{{ asset('images/logo.png') }}" alt="IEBO Logo" class="h-10">
             <span class="text-lg font-semibold text-gray-800 dark:text-gray-200 ml-2">IEBO</span>
+
         </a>
 
         <meta charset="utf-8">
+
+        <link href="{{ asset('css/custom-theme.css') }}" rel="stylesheet">
+
         <!-- Configura la codificación de caracteres como UTF-8 -->
 
         <meta name="viewport" content="width=device-width, initial-scale=1">

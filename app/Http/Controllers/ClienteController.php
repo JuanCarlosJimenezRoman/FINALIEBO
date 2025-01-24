@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cliente;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class ClienteController extends Controller
 {
@@ -13,7 +14,7 @@ class ClienteController extends Controller
      */
     public function index()
     {
-        $clientes = Cliente::with('user')->get(); // Relación con usuarios
+        $clientes = Cliente::with('user')->get(); // Obtiene clientes con relación a usuarios
         return view('cliente.index', compact('clientes'));
     }
 
@@ -31,7 +32,7 @@ class ClienteController extends Controller
     public function store(Request $request)
     {
         // Validación de datos
-        $request->validate([
+        $validatedData = $request->validate([
             'nombre' => 'required|string|max:255',
             'telefono' => 'required|string|max:15',
             'direccion' => 'required|string|max:255',
@@ -43,20 +44,20 @@ class ClienteController extends Controller
 
         // Crear el usuario relacionado
         $user = User::create([
-            'name' => $request->nombre,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'name' => $validatedData['nombre'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']),
             'role' => 'cliente', // Rol predeterminado
         ]);
 
-        // Crear el cliente y asociarlo al usuario
+        // Crear el cliente asociado
         Cliente::create([
-            'nombre' => $request->nombre,
-            'telefono' => $request->telefono,
-            'direccion' => $request->direccion,
+            'nombre' => $validatedData['nombre'],
+            'telefono' => $validatedData['telefono'],
+            'direccion' => $validatedData['direccion'],
             'user_id' => $user->id, // Asociar al usuario recién creado
-            'plante_educativo' => $request->plante_educativo,
-            'region' => $request->region,
+            'plante_educativo' => $validatedData['plante_educativo'],
+            'region' => $validatedData['region'],
         ]);
 
         return redirect()->route('clientes.index')->with('success', 'Cliente creado correctamente.');
@@ -86,7 +87,7 @@ class ClienteController extends Controller
     public function update(Request $request, Cliente $cliente)
     {
         // Validar los datos
-        $request->validate([
+        $validatedData = $request->validate([
             'nombre' => 'required|string|max:255',
             'telefono' => 'required|string|max:15',
             'direccion' => 'required|string|max:255',
@@ -95,13 +96,7 @@ class ClienteController extends Controller
         ]);
 
         // Actualizar el cliente
-        $cliente->update([
-            'nombre' => $request->nombre,
-            'telefono' => $request->telefono,
-            'direccion' => $request->direccion,
-            'plante_educativo' => $request->plante_educativo,
-            'region' => $request->region,
-        ]);
+        $cliente->update($validatedData);
 
         return redirect()->route('clientes.index')->with('success', 'Cliente actualizado correctamente.');
     }
@@ -123,10 +118,4 @@ class ClienteController extends Controller
 
         return redirect()->route('clientes.index')->with('success', 'Cliente eliminado correctamente.');
     }
-
-    public function cliente()
-{
-    return $this->belongsTo(Cliente::class, 'id_cliente');
-}
-
 }

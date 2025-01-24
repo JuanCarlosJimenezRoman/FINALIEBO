@@ -40,4 +40,5 @@
         <a href="/clientes" class="btn btn-danger">{{ __('Cancel') }}</a>
         <button type="submit" class="btn btn-primary">{{ __('Submit') }}</button>
     </div>
+
 </div>

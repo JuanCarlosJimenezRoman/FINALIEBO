@@ -96,7 +96,7 @@
         <p><strong>Hora:</strong> {{ $hora }}</p>
         <p><strong>Venta ID:</strong> #{{ $venta->id }}</p>
         <div class="divider"></div>
-        <p><strong>Cliente:</strong> {{ $venta->cliente->name ?? 'Sin cliente' }}</p>
+        <p><strong>Director:</strong> {{ $venta->cliente->nombre ?? 'Sin cliente' }}</p>
         <p><strong>Teléfono:</strong> {{ $venta->cliente->telefono ?? 'N/A' }}</p>
         <p><strong>Dirección:</strong> {{ $venta->cliente->direccion ?? 'N/A' }}</p>
         <div class="divider"></div>
@@ -122,7 +122,7 @@
             </tbody>
         </table>
         <div class="divider"></div>
-        <p class="total">Total: ${{ number_format($venta->total, 2) }}</p>
+        <p class="total">Total: ${{ number_format($productos->sum(fn($producto) => $producto->cantidad * $producto->precio), 2) }}</p>
         <div class="footer">
             <p>¡Gracias por su compra!</p>
         </div>

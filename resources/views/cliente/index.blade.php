@@ -3,53 +3,51 @@
 @section('title', 'Inicio')  <!-- Define el título de la página como "Inicio" -->
 
 @section('content_header')
-    <h1>Clientes</h1>  <!-- Encabezado principal de la sección de "Clientes" -->
+    <h1 style="color: var(--color-primary); font-weight: bold;">Clientes</h1>  <!-- Encabezado principal de la sección de "Clientes" -->
 @stop
 
 @section('content')
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="card">
-                <div class="card-header">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <!-- Título de la tarjeta -->
-                        <span id="card_title">
-                            {{ __('Clientes') }}
-                        </span>
-                        <div class="float-right">
-                            <!-- Botón para crear un nuevo cliente -->
-                            <a href="{{ route('clientes.create') }}" class="btn btn-primary btn-sm float-right" data-placement="left">
-                                {{ __('Crear Nuevo') }}
-                            </a>
-                        </div>
+    <div class="container-fluid">
+        <div class="card shadow-sm" style="border: 2px solid var(--color-primary);">
+            <div class="card-header" style="background-color: var(--color-primary); color: var(--color-white);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <!-- Título de la tarjeta -->
+                    <span id="card_title">
+                        {{ __('Clientes') }}
+                    </span>
+                    <div class="float-right">
+                        <!-- Botón para crear un nuevo cliente -->
+                        <a href="{{ route('clientes.create') }}" class="btn btn-sm btn-light" style="background-color: var(--color-secondary); color: var(--color-white);">
+                            {{ __('Crear Nuevo') }}
+                        </a>
                     </div>
                 </div>
-                <div class="card-body">
-                    <!-- Mensaje de éxito -->
-                    @if ($message = Session::get('success'))
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                            <strong>{{ $message }}</strong>
-                        </div>
-                    @endif
-
-                    <div class="table-responsive">
-                        <!-- Tabla para mostrar los clientes -->
-                        <table class="table table-striped table-bordered" id="tblClients" style="width: 100%;">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Nombre</th>
-                                    <th>Correo Electrónico</th>
-                                    <th>Teléfono</th>
-                                    <th>Dirección</th>
-                                    <th>Plante Educativo</th>
-                                    <th>Región</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                        </table>
+            </div>
+            <div class="card-body" style="background-color: var(--color-gray-light);">
+                <!-- Mensaje de éxito -->
+                @if ($message = Session::get('success'))
+                    <div class="alert alert-success">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <strong>{{ $message }}</strong>
                     </div>
+                @endif
+
+                <div class="table-responsive">
+                    <!-- Tabla para mostrar los clientes -->
+                    <table class="table table-striped table-bordered" id="tblClients" style="width: 100%; border: 1px solid var(--color-primary);">
+                        <thead style="background-color: var(--color-primary); color: var(--color-white);">
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Correo Electrónico</th>
+                                <th>Teléfono</th>
+                                <th>Dirección</th>
+                                <th>Plante Educativo</th>
+                                <th>Región</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
         </div>
@@ -64,7 +62,12 @@
         .action-buttons {
             display: flex;
             justify-content: center;
-            gap: 100px; /* Espacio entre botones */
+            gap: 10px; /* Ajustar espacio entre botones */
+        }
+
+        .btn-sm {
+            border-radius: 5px;
+            padding: 5px 10px;
         }
     </style>
 @endsection
@@ -98,8 +101,10 @@
                         orderable: false,
                         render: function(data, type, row) {
                             return `
-                                <a href="/clientes/${row.id}/edit" class="btn btn-sm btn-primary">Editar</a>
-                                <button class="btn btn-sm btn-danger" onclick="deleteClient(${row.id})">Eliminar</button>
+                                <div class="action-buttons">
+                                    <a href="/clientes/${row.id}/edit" class="btn btn-sm btn-primary">Editar</a>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteClient(${row.id})">Eliminar</button>
+                                </div>
                             `;
                         }
                     }
