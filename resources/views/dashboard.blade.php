@@ -3,100 +3,58 @@
 @section('title', 'Dashboard')
 
 @section('content_header')
-    <h1 style="color: var(--color-primary); font-weight: bold;">Inicio</h1>
+    <h1 style="color: var(--color-primary); font-weight: bold;">Panel de Control</h1>
 @stop
 
 @section('content')
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Info boxes -->
-            <div class="col-lg-3 col-md-6 col-sm-12">
-                <div class="info-box shadow-sm" style="border: 2px solid var(--color-primary);">
-                    <span class="info-box-icon" style="background-color: var(--color-primary); color: var(--color-white);">
-                        <i class="fas fa-users"></i>
+    <div class="row">
+        <!-- Cajas informativas con estadísticas -->
+        @php
+            $labels = [
+                'clients' => 'Clientes',
+                'products' => 'Productos',
+                'categories' => 'Categorías',
+                'sales' => 'Ventas',
+            ];
+        @endphp
+        @foreach ($totales as $key => $value)
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="info-box shadow-sm">
+                    <span class="info-box-icon bg-{{ $key == 'clients' ? 'success' : ($key == 'products' ? 'primary' : ($key == 'categories' ? 'warning' : 'info')) }}">
+                        <i class="fas fa-{{ $key == 'clients' ? 'users' : ($key == 'products' ? 'list' : ($key == 'categories' ? 'tags' : 'cash-register')) }}"></i>
                     </span>
                     <div class="info-box-content">
-                        <span class="info-box-text" style="color: var(--color-primary);">Clientes</span>
-                        <span class="info-box-number" style="color: var(--color-accent);">{{ $totales['clients'] }}</span>
+                        <span class="info-box-text">{{ $labels[$key] }}</span>
+                        <span class="info-box-number">{{ $value }}</span>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-12">
-                <div class="info-box shadow-sm" style="border: 2px solid var(--color-primary);">
-                    <span class="info-box-icon" style="background-color: var(--color-secondary); color: var(--color-white);">
-                        <i class="fas fa-list"></i>
-                    </span>
-                    <div class="info-box-content">
-                        <span class="info-box-text" style="color: var(--color-primary);">Productos</span>
-                        <span class="info-box-number" style="color: var(--color-accent);">{{ $totales['products'] }}</span>
-                    </div>
+        @endforeach
+    </div>
+
+    <div class="row">
+        <!-- Gráficos de ventas -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-2" style="border-color: var(--color-primary);">
+                <div class="card-header bg-primary text-white" style="border-radius: 8px 8px 0 0;">
+                    <h3 class="card-title">Ventas por Semana</h3>
                 </div>
-            </div>
-            <div class="col-lg-3 col-md-6 col-sm-12">
-                <div class="info-box shadow-sm" style="border: 2px solid var(--color-primary);">
-                    <span class="info-box-icon" style="background-color: var(--color-accent); color: var(--color-white);">
-                        <i class="fas fa-tags"></i>
-                    </span>
-                    <div class="info-box-content">
-                        <span class="info-box-text" style="color: var(--color-primary);">Categorías</span>
-                        <span class="info-box-number" style="color: var(--color-accent);">{{ $totales['categories'] }}</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 col-sm-12">
-                <div class="info-box shadow-sm" style="border: 2px solid var(--color-primary);">
-                    <span class="info-box-icon" style="background-color: var(--color-secondary); color: var(--color-white);">
-                        <i class="fas fa-cash-register"></i>
-                    </span>
-                    <div class="info-box-content">
-                        <span class="info-box-text" style="color: var(--color-primary);">Ventas</span>
-                        <span class="info-box-number" style="color: var(--color-accent);">{{ $totales['sales'] }}</span>
+                <div class="card-body">
+                    <div class="chart">
+                        <canvas id="ventasPorSemana"></canvas>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <!-- Gráfico: Ventas por semana -->
-            <div class="col-lg-6 col-md-12">
-                <div class="card shadow-sm" style="border: 2px solid var(--color-primary);">
-                    <div class="card-header" style="background-color: var(--color-primary); color: var(--color-white);">
-                        <h3 class="card-title">VENTAS POR SEMANA</h3>
-                        <div class="card-tools">
-                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                <i class="fas fa-minus" style="color: var(--color-white);"></i>
-                            </button>
-                            <button type="button" class="btn btn-tool" data-card-widget="remove">
-                                <i class="fas fa-times" style="color: var(--color-white);"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart">
-                            <canvas id="ventasPorSemana" width="804" height="375"></canvas>
-                        </div>
-                    </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm border-2" style="border-color: var(--color-primary);">
+                <div class="card-header bg-primary text-white" style="border-radius: 8px 8px 0 0;">
+                    <h3 class="card-title">Ventas por Mes</h3>
                 </div>
-            </div>
-
-            <!-- Gráfico: Ventas por mes -->
-            <div class="col-lg-6 col-md-12">
-                <div class="card shadow-sm" style="border: 2px solid var(--color-primary);">
-                    <div class="card-header" style="background-color: var(--color-primary); color: var(--color-white);">
-                        <h3 class="card-title">VENTAS POR MES</h3>
-                        <div class="card-tools">
-                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                <i class="fas fa-minus" style="color: var(--color-white);"></i>
-                            </button>
-                            <button type="button" class="btn btn-tool" data-card-widget="remove">
-                                <i class="fas fa-times" style="color: var(--color-white);"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart">
-                            <canvas id="ventasPorMes" width="804" height="375"></canvas>
-                        </div>
+                <div class="card-body">
+                    <div class="chart">
+                        <canvas id="ventasPorMes"></canvas>
                     </div>
                 </div>
             </div>
@@ -104,67 +62,88 @@
     </div>
 @stop
 
+@section('css')
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+    <style>
+        .info-box-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        h1 {
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            color: var(--color-primary);
+        }
+    </style>
+@stop
+
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        ventasSemana();
-        // Configura los colores para los gráficos
-        var chartColors = {
-            primary: 'rgba(40, 92, 77, 0.7)', // Color principal
-            secondary: 'rgba(179, 142, 93, 0.7)', // Color secundario
-            accent: 'rgba(157, 36, 73, 0.7)' // Color acento
-        };
+        document.addEventListener('DOMContentLoaded', function () {
+            ventasSemana();
+            ventasMes();
+        });
 
-        // Gráfico: Ventas por mes
-        var dataVenta = @json($ventas);
-        if (dataVenta && Object.keys(dataVenta).length > 0) {
-            var ctx = document.getElementById('ventasPorMes').getContext('2d');
-            var chart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(dataVenta[Object.keys(dataVenta)[0]]),
-                    datasets: Object.keys(dataVenta).map(function(year) {
-                        return {
-                            label: year,
-                            data: Object.values(dataVenta[year]),
-                            backgroundColor: chartColors.primary,
-                            borderWidth: 1
-                        };
-                    })
-                },
-                options: {
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
-                }
-            });
-        }
-
-        // Gráfico: Ventas por semana
+        // Ventas por Semana
         function ventasSemana() {
-            var ctx = document.getElementById('ventasPorSemana').getContext('2d');
-            var data = {!! json_encode($ventasPorSemana) !!};
-            var labels = data.map(item => item.dia);
-            var valores = data.map(item => item.total);
+            const ctx = document.getElementById('ventasPorSemana').getContext('2d');
+            const data = {!! json_encode($ventasPorSemana) !!};
+            const labels = data.map(item => item.dia);
+            const valores = data.map(item => item.total);
 
-            var chart = new Chart(ctx, {
+            new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Ventas por día',
+                        label: 'Ventas por Día',
                         data: valores,
-                        backgroundColor: chartColors.secondary,
-                        borderColor: chartColors.secondary,
-                        borderWidth: 1
-                    }]
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1,
+                    }],
                 },
                 options: {
+                    responsive: true,
                     scales: {
-                        y: { beginAtZero: true }
-                    }
-                }
+                        y: {
+                            beginAtZero: true,
+                        },
+                    },
+                },
             });
+        }
+
+        // Ventas por Mes
+        function ventasMes() {
+            const ctx = document.getElementById('ventasPorMes').getContext('2d');
+            const dataVenta = @json($ventas);
+
+            if (dataVenta && Object.keys(dataVenta).length > 0) {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(dataVenta[Object.keys(dataVenta)[0]]),
+                        datasets: Object.keys(dataVenta).map(year => ({
+                            label: `Año ${year}`,
+                            data: Object.values(dataVenta[year]),
+                            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1,
+                        })),
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                            },
+                        },
+                    },
+                });
+            }
         }
     </script>
 @stop

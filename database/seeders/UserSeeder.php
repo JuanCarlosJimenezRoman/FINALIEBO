@@ -13,7 +13,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Limpia la tabla de usuarios antes de insertar nuevos registros
-        User::truncate();
+        User::query()->delete();
 
         User::create([
             'name' => 'SISTEMAS FREE',
@@ -22,14 +22,21 @@ class UserSeeder extends Seeder
             'role' => 'admin'
         ]);
 
+         User::create([
+            'name' => 'ADMIN 2',
+            'email' => 'jaba@gmail.com',
+            'password' => bcrypt('jaba123'),
+            'role' => 'admin'
+        ]);
+
         User::create([
             'name' => 'CLIENTE',
             'email' => 'cliente@gmail.com',
-            'password' => bcrypt('client123'),
+            'password' => bcrypt('cliente123'),
             'role' => 'cliente'
         ]);
 
         // Si necesitas generar usuarios adicionales, descomenta la línea de abajo
-        User::factory()->count(10)->create(['role' => 'cliente']);
+        //User::factory()->count(10)->create(['role' => 'cliente']);
     }
 }

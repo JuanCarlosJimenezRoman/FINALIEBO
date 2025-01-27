@@ -19,13 +19,15 @@ class DatatableController extends Controller
     }
 
     public function clients()
-{
-    $clientes = Cliente::with('user')->get();
+    {
+        $clientes = Cliente::with('user')->select(['id', 'nombre', 'telefono', 'direccion', 'plante_educativo', 'region']);
+        return datatables()->of($clientes)
+            ->addColumn('user.email', function ($cliente) {
+                return $cliente->user ? $cliente->user->email : 'Sin correo';
+            })
+            ->toJson();
+    }
 
-    return response()->json([
-        'data' => $clientes,
-    ]);
-}
 
 
     public function users()

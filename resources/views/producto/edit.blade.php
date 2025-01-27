@@ -1,40 +1,40 @@
 @extends('adminlte::page')
 <!-- Extiende la plantilla AdminLTE para dar formato a la página -->
 
-@section('title', 'Dashboard')
-<!-- Define el título de la página como "Dashboard" -->
+@section('title', 'Actualizar Libro')
+<!-- Define el título de la página como "Actualizar Libro" -->
 
 @section('content_header')
-    <h1>Libros</h1>
-    <!-- Encabezado de la página que muestra "Dashboard" -->
+    <!-- Encabezado principal con estilo consistente -->
+    <h1 style="color: var(--color-primary); font-weight: bold;">Actualizar Libro</h1>
 @stop
 
 @section('content')
-    <div class="">
+    <div class="row justify-content-center">
         <div class="col-md-12">
-            <!-- Contenedor de Bootstrap con una columna que ocupa todo el ancho (12 columnas) -->
+            <!-- Contenedor principal con una columna que ocupa todo el ancho -->
 
             @includeif('partials.errors')
             <!-- Incluye el archivo 'partials.errors' si existe, para mostrar mensajes de error en caso de validación fallida -->
 
-            <div class="card card-default">
-                <div class="card-header">
-                    <!-- Título de la tarjeta que indica que se está actualizando un producto existente -->
-                    <span class="card-title">{{ __('Update') }} Lirbos</span>
+            <div class="card shadow-sm border-2" style="border-color: var(--color-primary); border-radius: 8px;">
+                <div class="card-header bg-primary text-white" style="border-radius: 8px 8px 0 0;">
+                    <!-- Título de la tarjeta -->
+                    <h5 class="mb-0">Formulario de Actualización de Libro</h5>
                 </div>
                 <div class="card-body">
-                    <!-- Formulario para enviar datos actualizados del producto al controlador -->
-                    <form method="POST" action="{{ route('productos.update', $producto->id) }}" role="form"
-                        enctype="multipart/form-data">
-                        {{ method_field('PATCH') }}
-                        <!-- Método PATCH para indicar al servidor que es una actualización de recurso existente -->
-
+                    <!-- Formulario para actualizar el libro -->
+                    <form method="POST" action="{{ route('productos.update', $producto->id) }}" role="form" enctype="multipart/form-data">
                         @csrf
-                        <!-- Token CSRF para proteger el formulario contra ataques de falsificación de solicitudes -->
+                        @method('PATCH') <!-- Método PATCH para indicar que es una actualización -->
 
                         @include('producto.form')
-                        <!-- Incluye el archivo 'producto.form' para mantener los campos del formulario organizados y reutilizables -->
+                        <!-- Incluye el archivo 'producto.form' para mantener los campos organizados -->
                     </form>
+                </div>
+                <div class="card-footer">
+                    <!-- Botón para regresar al listado de libros -->
+                    <a href="{{ route('productos.index') }}" class="btn btn-secondary">Regresar</a>
                 </div>
             </div>
         </div>
@@ -42,13 +42,37 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
-    <!-- Enlace a un archivo CSS personalizado para aplicar estilos adicionales en la página -->
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+    <style>
+        .bg-primary {
+            background-color: var(--color-primary) !important;
+        }
+
+        .btn-success {
+            background-color: var(--color-secondary);
+            color: var(--color-white);
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: var(--color-white);
+        }
+
+        .btn-success:hover,
+        .btn-danger:hover {
+            opacity: 0.8;
+        }
+
+        h1 {
+            font-family: 'Arial', sans-serif; /* Fuente consistente */
+            font-weight: bold;
+            color: var(--color-primary);
+        }
+    </style>
 @stop
 
 @section('js')
     <script>
-        console.log('Hi!');
-        <!-- Mensaje en la consola para verificar que el JavaScript se está cargando correctamente -->
+        console.log('Formulario de Actualización de Libro cargado correctamente.');
     </script>
 @stop

@@ -9,9 +9,10 @@
 
         </a>
 
+
         <meta charset="utf-8">
 
-        <link href="{{ asset('css/custom-theme.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
 
         <!-- Configura la codificación de caracteres como UTF-8 -->
 

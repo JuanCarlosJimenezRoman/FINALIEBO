@@ -12,7 +12,9 @@ return new class extends Migration
     public function up()
     {
         Schema::table('productos', function (Blueprint $table) {
-            $table->string('foto')->nullable()->after('precio_venta');
+            if (!Schema::hasColumn('productos', 'foto')) { // Verificar si la columna ya existe
+                $table->string('foto')->nullable()->after('precio_venta');
+            }
         });
 
     }

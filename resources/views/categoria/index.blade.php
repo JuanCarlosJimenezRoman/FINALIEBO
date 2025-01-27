@@ -7,10 +7,10 @@
 @stop
 
 @section('content')
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="card">
-                <div class="card-header">
+    <div class="container-fluid">
+         <div class="card shadow-sm" style="border: 2px solid var(--color-primary);">
+
+                <div class="card-header" style="background-color: var(--color-primary); color: var(--color-white);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <!-- Título de la tarjeta -->
                         <span id="card_title">
@@ -18,8 +18,8 @@
                         </span>
                         <div class="float-right">
                             <!-- Botón para crear una nueva categoría, que enlaza a la vista de creación -->
-                            <a href="{{ route('categorias.create') }}" class="btn btn-primary btn-sm float-right"
-                                data-placement="left">
+                            <a href="{{ route('categorias.create') }}" class="btn btn-sm btn-light" style="background-color: var(--color-secondary); color: var(--color-white);">
+
                                 {{ __('Crear Nueva') }}
                             </a>
                         </div>
@@ -36,7 +36,7 @@
                     <div class="table-responsive">
                         <!-- Tabla para mostrar las categorías con estilo responsivo -->
                         <table class="table table-striped table-hover display responsive nowrap" width="100%"
-                            id="tblCategories">
+                            id="tblCategories " style="width: 100%; border: 1px solid var(--color-primary);" >
                             <thead class="thead-dark">
                                 <tr>
                                     <th>Id</th> <!-- Columna para ID de la categoría -->

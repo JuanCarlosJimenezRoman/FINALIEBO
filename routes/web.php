@@ -28,10 +28,21 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('l
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 // Grupo de rutas protegidas por middleware 'auth' y 'admin'
+Route::middleware(['auth'])->group(function () {
+    Route::get('/clientes', [ClienteController::class, 'index'])->name('clientes.index');
+    Route::prefix('carrito')->group(function () {
+        Route::get('/', [CarritoController::class, 'mostrarCarrito'])->name('carrito.mostrar');
+        Route::post('/agregar/{producto}', [CarritoController::class, 'agregar'])->name('carrito.agregar');
+        Route::post('/remover/{producto}', [CarritoController::class, 'remover'])->name('carrito.remover');
+        Route::post('/comprar', [CarritoController::class, 'finalizarCompra'])->name('carrito.comprar');
+    });
+});
+
 Route::middleware(['auth', 'admin'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/home', [DashboardController::class, 'index'])->name('home');
+
 
     // Perfil de usuario
     Route::prefix('profile')->group(function () {
@@ -78,17 +89,54 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/agregar/{producto}', [CarritoController::class, 'agregar'])->name('carrito.agregar');
         Route::post('/remover/{producto}', [CarritoController::class, 'remover'])->name('carrito.remover');
         Route::post('/comprar', [CarritoController::class, 'finalizarCompra'])->name('carrito.comprar');
+
     });
 
     // Ventas
-    Route::prefix('ventas')->group(function () {
-        Route::get('/', [VentaController::class, 'index'])->name('venta.index');
-        Route::get('/{id}/ticket', [VentaController::class, 'ticket'])->name('ventas.ticket');
-        Route::delete('/{id}', [VentaController::class, 'destroy'])->name('ventas.eliminar');
-        Route::get('/{id}/editar', [VentaController::class, 'edit'])->name('ventas.editar');
-        Route::post('/{id}', [VentaController::class, 'update'])->name('ventas.update');
-        Route::get('/{id}/detalles', [VentaController::class, 'detalles'])->name('venta.detalles');
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/venta/show', [VentaController::class, 'show'])->name('venta.show');
+        Route::get('/venta', [VentaController::class, 'index'])->name('venta.index');
+
+        Route::prefix('ventas')->group(function () {
+            // Página principal de ventas
+            Route::get('/', [VentaController::class, 'index'])->name('venta.index');
+        Route::post('/venta', [VentaController::class, 'store'])->name('venta.store');
+
+            // Mostrar ticket de venta
+            Route::get('/{id}/ticket', [VentaController::class, 'ticket'])->name('ventas.ticket');
+
+            // Eliminar venta
+            Route::delete('/{id}', [VentaController::class, 'destroy'])->name('ventas.eliminar');
+
+            // Editar venta
+            Route::get('/{id}/editar', [VentaController::class, 'edit'])->name('ventas.editar');
+
+            // Actualizar venta
+            Route::post('/{id}', [VentaController::class, 'update'])->name('ventas.update');
+
+            // Detalles de venta
+            Route::get('/{id}/detalles', [VentaController::class, 'detalles'])->name('venta.detalles');
+            Route::get('/nueva', [VentaController::class, 'create'])->name('venta.nueva');
+
+            // Listar ventas
+            Route::get('/listar', [VentaController::class, 'show'])->name('venta.listar');
+            // Mostrar listado de ventas
+
+            // Ruta para método adicional (si es necesario)
+            Route::get('/list', [VentaController::class, 'list'])->name('venta.list');
+
+            Route::get('/listarVentas', [DatatableController::class, 'sales'])->name('sales.list');
+Route::get('/ventas/{id}/detalles', [VentaController::class, 'detalles'])->name('ventas.detalles');
+Route::post('/ventas/{id}/estado', [VentaController::class, 'cambiarEstado'])->name('ventas.cambiarEstado');
+Route::get('/listarClientes', [DatatableController::class, 'clients'])->name('clients.list');
+
+
+        });
+
+        // Buscar cliente en ventas
+        Route::get('/venta/cliente', [VentaController::class, 'buscarCliente'])->name('venta.cliente');
     });
+
 
     // Cliente en ventas
     Route::get('/venta/cliente', [VentaController::class, 'buscarCliente'])->name('venta.cliente');

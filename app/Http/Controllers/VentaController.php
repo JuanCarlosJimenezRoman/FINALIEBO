@@ -138,7 +138,7 @@ class VentaController extends Controller
         $venta->detalleventa()->delete();
         $venta->delete();
 
-        return redirect()->route('venta.show')->with('success', 'Venta eliminada correctamente.');
+        return redirect()->route('venta.index')->with('success', 'Venta eliminada correctamente.');
     }
 
 
@@ -153,5 +153,10 @@ class VentaController extends Controller
 
     return view('venta.detalles', compact('venta'));
 }
+public function create()
+{
+    return view('venta.create'); // Asegúrate de que esta vista exista
+}
+
 
 }

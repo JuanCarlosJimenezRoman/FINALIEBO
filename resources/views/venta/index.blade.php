@@ -1,49 +1,50 @@
 @extends('adminlte::page')
-@section('title', 'Venta')
+
+@section('title', 'Registrar Venta')
 
 @section('content_header')
-    <h1>Registrar Nueva Venta</h1>
+    <h1 style="color: var(--color-primary); font-weight: bold;">Registrar Nueva Venta</h1>
 @stop
 
 @section('content')
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="card">
-                <div class="card-header">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span id="card_title">
-                            {{ __('Registrar Venta') }}
-                        </span>
-                        <div class="float-right">
-                            <a href="{{ route('venta.show') }}" class="btn btn-primary btn-sm">
-                                {{ __('Listar Ventas') }}
-                            </a>
-                        </div>
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card shadow-sm border-2" style="border-color: var(--color-primary); border-radius: 8px;">
+                <div class="card-header bg-primary text-white" style="border-radius: 8px 8px 0 0;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span style="font-family: 'Arial', sans-serif;">Registrar Venta</span>
+                        <a href="{{ route('venta.show') }}" class="btn btn-secondary btn-sm">
+                            Listar Ventas
+                        </a>
                     </div>
                 </div>
-
                 <div class="card-body">
-                    <div class="row">
+                    <!-- Sección para buscar cliente -->
+                    <div class="row mb-3">
                         <div class="form-group col-md-4">
                             <label for="buscarCliente">Buscar Cliente</label>
                             <input id="buscarCliente" class="form-control" type="text" placeholder="Buscar Cliente">
                             <input id="id_cliente" class="form-control" type="hidden">
                         </div>
-
                         <div class="form-group col-md-4">
                             <label for="tel_cliente">Teléfono</label>
                             <input id="tel_cliente" class="form-control" type="text" disabled>
                         </div>
-
                         <div class="form-group col-md-4">
                             <label for="dir_cliente">Dirección</label>
                             <input id="dir_cliente" class="form-control" type="text" disabled>
                         </div>
                     </div>
 
+                    <!-- Lista de productos usando Livewire -->
                     @livewire('product-list')
 
-                    <button class="btn btn-primary fixed-button" id="btnVenta" type="button">Generar Venta</button>
+                    <!-- Botón para generar la venta -->
+                    <div class="mt-4">
+                        <button class="btn btn-success" id="btnVenta" type="button">
+                            Generar Venta
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -53,6 +54,34 @@
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css">
+    <style>
+        .bg-primary {
+            background-color: var(--color-primary) !important;
+        }
+
+        .btn-success {
+            background-color: var(--color-secondary) !important;
+            color: var(--color-white);
+            border: none;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: var(--color-white);
+            border: none;
+        }
+
+        .btn-success:hover,
+        .btn-secondary:hover {
+            opacity: 0.8;
+        }
+
+        h1 {
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            color: var(--color-primary);
+        }
+    </style>
 @stop
 
 @section('js')
@@ -74,9 +103,6 @@
                         dataType: "json",
                         data: { term: request.term },
                         success: function(data) {
-                            if (data.length === 0) {
-                                Swal.fire('Sin resultados', 'No se encontraron clientes con ese nombre.', 'info');
-                            }
                             response(data);
                         },
                         error: function() {
@@ -92,7 +118,7 @@
                 }
             });
 
-            // Manejo del botón para generar la venta
+            // Confirmación para generar la venta
             btnVenta.addEventListener('click', () => {
                 if (!id_cliente.value) {
                     Swal.fire('Advertencia', 'Debe seleccionar un cliente para realizar la venta.', 'warning');
@@ -129,7 +155,6 @@
                             }
                         })
                         .catch(error => {
-                            console.error('Error:', error);
                             Swal.fire('Error', 'Hubo un problema al procesar la venta.', 'error');
                         });
                     }
@@ -138,4 +163,3 @@
         });
     </script>
 @stop
-
