@@ -13,7 +13,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Limpia la tabla de usuarios antes de insertar nuevos registros
-        User::truncate();
+        User::query()->delete();
 
         // Inserta los registros iniciales
         User::create([
