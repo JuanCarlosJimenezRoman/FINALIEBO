@@ -19,41 +19,43 @@
                 </div>
                 <div class="card-body">
                     <!-- Formulario para crear un nuevo cliente -->
-                    <form method="POST" action="{{ route('clientes.store') }}" role="form">
-                        @csrf <!-- Token CSRF para proteger el formulario -->
+                    <form method="POST" action="{{ route('clientes.update', $cliente->id) }}" role="form">
+    @csrf
+    @method('PUT') <!-- Método HTTP para actualización -->
 
-                        <!-- Campos del formulario -->
-                        <div class="mb-3">
-                            <label for="nombre" class="form-label">Nombre</label>
-                            <input type="text" name="nombre" id="nombre" class="form-control" placeholder="Ingrese el nombre completo" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Correo Electrónico</label>
-                            <input type="email" name="email" id="email" class="form-control" placeholder="Ingrese el correo electrónico" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="telefono" class="form-label">Teléfono</label>
-                            <input type="text" name="telefono" id="telefono" class="form-control" placeholder="Ingrese el número de teléfono" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="direccion" class="form-label">Dirección</label>
-                            <textarea name="direccion" id="direccion" class="form-control" rows="3" placeholder="Ingrese la dirección completa" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="plante_educativo" class="form-label">Plantel Educativo</label>
-                            <input type="text" name="plante_educativo" id="plante_educativo" class="form-control" placeholder="Ingrese el plantel educativo" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="region" class="form-label">Región</label>
-                            <input type="text" name="region" id="region" class="form-control" placeholder="Ingrese la región" required>
-                        </div>
+    <div class="mb-3">
+        <label for="nombre" class="form-label">Nombre</label>
+        <input type="text" name="nombre" id="nombre" class="form-control" 
+               value="{{ old('nombre', $cliente->nombre) }}" required>
+    </div>
+    <div class="mb-3">
+        <label for="email" class="form-label">Correo Electrónico</label>
+        <input type="email" name="email" id="email" class="form-control" 
+               value="{{ old('email', $cliente->email) }}" required>
+    </div>
+    <div class="mb-3">
+        <label for="telefono" class="form-label">Teléfono</label>
+        <input type="text" name="telefono" id="telefono" class="form-control" 
+               value="{{ old('telefono', $cliente->telefono) }}" required>
+    </div>
+    <div class="mb-3">
+        <label for="direccion" class="form-label">Dirección</label>
+        <textarea name="direccion" id="direccion" class="form-control" rows="3" required>{{ old('direccion', $cliente->direccion) }}</textarea>
+    </div>
+    <div class="mb-3">
+        <label for="plante_educativo" class="form-label">Plantel Educativo</label>
+        <input type="text" name="plante_educativo" id="plante_educativo" class="form-control" 
+               value="{{ old('plante_educativo', $cliente->plante_educativo) }}">
+    </div>
+    <div class="mb-3">
+        <label for="region" class="form-label">Región</label>
+        <input type="text" name="region" id="region" class="form-control" 
+               value="{{ old('region', $cliente->region) }}">
+    </div>
 
-                        <!-- Botones de acción -->
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ route('clientes.index') }}" class="btn btn-danger">Cancelar</a>
-                            <button type="submit" class="btn btn-success">Guardar Cliente</button>
-                        </div>
-                    </form>
+    <button type="submit" class="btn btn-success">Actualizar Cliente</button>
+</form>
+
                 </div>
             </div>
         </div>

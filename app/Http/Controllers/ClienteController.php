@@ -53,6 +53,7 @@ class ClienteController extends Controller
         // Crear el cliente asociado
         Cliente::create([
             'nombre' => $validatedData['nombre'],
+            'email' => $validatedData['email'],
             'telefono' => $validatedData['telefono'],
             'direccion' => $validatedData['direccion'],
             'user_id' => $user->id, // Asociar al usuario recién creado
@@ -60,7 +61,7 @@ class ClienteController extends Controller
             'region' => $validatedData['region'],
         ]);
 
-        return redirect()->route('clientes.index')->with('success', 'Cliente creado correctamente.');
+        return redirect()->route('clientes.index')->with('success', 'Cliente creado correctamente');
     }
 
     /**
@@ -105,17 +106,32 @@ class ClienteController extends Controller
      * Elimina un cliente de la base de datos.
      */
     public function destroy($id)
-    {
-        $cliente = Cliente::findOrFail($id);
+{
+    $cliente = Cliente::findOrFail($id);
 
-        // Eliminar el usuario relacionado
-        if ($cliente->user) {
-            $cliente->user->delete();
-        }
-
-        // Eliminar el cliente
-        $cliente->delete();
-
-        return redirect()->route('clientes.index')->with('success', 'Cliente eliminado correctamente.');
+    if ($cliente->user) {
+        $cliente->user->delete();
     }
+    $cliente->delete();
+
+    return response()->json(['success' => true, 'message' => 'Cliente eliminado correctamente']);
+}
+public function buscar(Request $request)
+{
+    $term = $request->input('term');
+    $clientes = Cliente::where('nombre', 'LIKE', "%{$term}%")
+        ->orWhere('email', 'LIKE', "%{$term}%")
+        ->get();
+
+    return response()->json($clientes->map(function ($cliente) {
+        return [
+            'id' => $cliente->id,
+            'label' => $cliente->nombre . ' (' . $cliente->email . ')',
+            'value' => $cliente->nombre,
+            'telefono' => $cliente->telefono,
+            'direccion' => $cliente->direccion,
+        ];
+    }));
+}
+
 }

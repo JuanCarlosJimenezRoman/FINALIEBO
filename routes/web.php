@@ -139,7 +139,8 @@ Route::get('/listarClientes', [DatatableController::class, 'clients'])->name('cl
 
 
     // Cliente en ventas
-    Route::get('/venta/cliente', [VentaController::class, 'buscarCliente'])->name('venta.cliente');
+    Route::get('/cliente/buscar', [ClienteController::class, 'buscar'])->name('cliente.buscar');
+
 });
 
 // Autenticación

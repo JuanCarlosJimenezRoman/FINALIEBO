@@ -24,6 +24,7 @@ class Cliente extends Model
      */
     protected $fillable = [
         'nombre',
+        'email',
         'telefono',
         'direccion',
         'user_id', // Relación con el usuario (clave foránea)

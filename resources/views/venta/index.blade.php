@@ -99,7 +99,7 @@
             $(buscarCliente).autocomplete({
                 source: function(request, response) {
                     $.ajax({
-                        url: "{{ route('venta.cliente') }}",
+                        url: "{{ route('cliente.buscar') }}",
                         dataType: "json",
                         data: { term: request.term },
                         success: function(data) {

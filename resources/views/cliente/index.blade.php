@@ -121,7 +121,7 @@
                 columns: [
                     { data: 'id', title: 'ID' },
                     { data: 'nombre', title: 'Nombre' },
-                    { data: 'user.email', title: 'Correo Electrónico', defaultContent: 'Sin correo' },
+                    { data: 'email', title: 'Correo Electrónico', defaultContent: 'Sin correo' },
                     { data: 'telefono', title: 'Teléfono' },
                     { data: 'direccion', title: 'Dirección' },
                     { data: 'plante_educativo', title: 'Plante Educativo', defaultContent: 'No especificado' },
