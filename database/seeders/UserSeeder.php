@@ -13,8 +13,9 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Limpia la tabla de usuarios antes de insertar nuevos registros
-        User::query()->delete();
+        User::truncate();
 
+        // Inserta los registros iniciales
         User::create([
             'name' => 'SISTEMAS FREE',
             'email' => 'admin@gmail.com',
@@ -37,6 +38,6 @@ class UserSeeder extends Seeder
         ]);
 
         // Si necesitas generar usuarios adicionales, descomenta la línea de abajo
-        //User::factory()->count(10)->create(['role' => 'cliente']);
+        User::factory()->count(10)->create(['role' => 'cliente']);
     }
 }
